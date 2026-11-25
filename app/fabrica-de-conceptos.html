@@ -603,16 +603,16 @@ function renderConn(flash) {
   const M = {
     checking: ["", "<b>Conectando con Claude…</b> Puede tardar unos segundos."],
     granted: ["ok", "<b>Claude conectado.</b> Los agentes pueden trabajar."],
-    prompt: ["", "<b>Falta tu permiso.</b> Los agentes usan tu cuenta de Claude. Presiona <b>Dar permiso</b> (o Iniciar la fábrica) y acepta el aviso que aparece."],
-    unknown: ["", "<b>Claude disponible.</b> Al iniciar te pedirá permiso una vez; acéptalo."],
+    prompt: ["", "<b>Falta tu permiso.</b> Los agentes usan tu cuenta de Claude. Presiona <b>Abrir permisos</b> y activa Claude para esta página. Si prefieres, <b>Dar permiso</b> intenta que Claude muestre su aviso."],
+    unknown: ["", "<b>Claude disponible.</b> Si no ves ningún aviso al iniciar, presiona <b>Abrir permisos</b> y activa Claude para esta página."],
     denied: ["warn", "<b>El permiso está rechazado.</b> Ábrelo y activa “Claude” para esta página."],
     unavailable: ["warn", "<b>Esta vista no deja que la página use Claude.</b> Suele pasar en el panel lateral de Claude Code o en una vista previa. Abre el enlace en una pestaña normal del navegador o en el chat de la app de escritorio: <code>" + link + "</code>"],
     "no-runtime": ["warn", "<b>La página no está abierta dentro de Claude</b> (por ejemplo, el archivo .html abierto con doble clic). Ábrela desde <code>" + link + "</code>"]
   };
   const [tone, html] = M[conn.state] || M.unknown;
   el.className = "notice" + (tone ? " " + tone : ""); el.hidden = conn.state === "granted" && !flash && !conn.lastError;
-  el.innerHTML = html + (conn.lastError && conn.state !== "granted" ? `<div style="margin-top:6px;font-family:var(--mono);font-size:11.5px">${esc(conn.lastError)}</div>` : "") + (conn.state === "prompt" || conn.state === "unknown" ? ` <div class="row" style="margin-top:8px"><button class="btn primary sm" id="connAsk">Dar permiso</button></div>` : "")
-    + (conn.state === "denied" || conn.state === "unavailable" ? ` <div class="row" style="margin-top:8px">${conn.state === "denied" ? `<button class="btn sm" id="connManage">Abrir permisos</button>` : ""}<button class="btn sm" id="connCopy">Copiar enlace</button></div>` : "");
+  el.innerHTML = html + (conn.lastError && conn.state !== "granted" ? `<div style="margin-top:6px;font-family:var(--mono);font-size:11.5px">${esc(conn.lastError)}</div>` : "") + (conn.state === "prompt" || conn.state === "unknown" ? ` <div class="row" style="margin-top:8px">${S.perms ? `<button class="btn primary sm" id="connManage">Abrir permisos</button>` : ""}<button class="btn sm" id="connAsk">Dar permiso</button></div>` : "")
+    + (conn.state === "denied" || conn.state === "unavailable" ? ` <div class="row" style="margin-top:8px">${S.perms ? `<button class="btn primary sm" id="connManage">Abrir permisos</button>` : ""}<button class="btn sm" id="connCopy">Copiar enlace</button></div>` : "");
   $("#connAsk")?.addEventListener("click", async () => {
     const btn = $("#connAsk"); btn.disabled = true; btn.textContent = "Esperando el aviso de Claude…";
     const race = (p, ms, label) => Promise.race([p, new Promise((_, r) => setTimeout(() => r({ code: "timeout", message: label + ": sin respuesta en " + ms / 1000 + " s" }), ms))]);
@@ -635,7 +635,12 @@ function renderConn(flash) {
   });
   el.insertAdjacentHTML("beforeend", `<details style="margin-top:8px" ${conn.lastError ? "open" : ""}><summary style="cursor:pointer;font-size:12px">Diagnóstico técnico</summary><pre id="diagLog" style="white-space:pre-wrap;font-family:var(--mono);font-size:11px;margin:6px 0">${esc(diag.join("\n"))}</pre><button class="btn sm" id="diagCopy">Copiar diagnóstico</button></details>`);
   $("#diagCopy")?.addEventListener("click", () => { const t = diag.join("\n"); navigator.clipboard.writeText(t).then(() => toast("Diagnóstico copiado: pégalo en el chat")).catch(() => { const r = document.createRange(); r.selectNodeContents($("#diagLog")); getSelection().removeAllRanges(); getSelection().addRange(r); toast("Texto seleccionado: cópialo con Cmd/Ctrl + C"); }); });
-  $("#connManage")?.addEventListener("click", () => S.perms?.manage().then(checkClaude).catch(() => toast("Abre el menú Permisos de esta página (arriba, junto al título) y activa Claude.")));
+  $("#connManage")?.addEventListener("click", () => {
+    d("permissions.manage() …");
+    S.perms.manage()
+      .then(async () => { const st = await S.perms.state("sample").catch(() => "?"); d("panel cerrado; permiso 'sample': " + st); conn.state = st === "granted" ? "granted" : st === "denied" ? "denied" : conn.state; conn.lastError = st === "granted" ? "" : "El permiso sigue en “" + st + "”. Activa Claude en el panel y ciérralo."; renderConn(true); })
+      .catch(e => { d("manage falló: " + (e?.code || e)); conn.lastError = "Claude no abrió el panel de permisos (" + (e?.code || "error") + "). Ábrelo desde el menú de esta página en Claude Desktop, arriba junto al título."; renderConn(true); });
+  });
   $("#connCopy")?.addEventListener("click", () => navigator.clipboard.writeText(link).then(() => toast("Enlace copiado")).catch(() => toast(link)));
 }
 
