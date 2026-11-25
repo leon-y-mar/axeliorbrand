@@ -488,7 +488,7 @@ ${schema}`;
   const t0 = Date.now();
   try {
     const out = await S.sample.json(prompt, {
-      modelTier: tier, signal: S.ctl?.signal,
+      ...tierOpt(tier), signal: S.ctl?.signal,
       onText: ({ text }) => setAgent(key, "work", `escribiendo · ${text.length} car.`)
     });
     setAgent(key, "done", `listo · ${Math.round((Date.now() - t0) / 1000)} s`);
@@ -567,14 +567,22 @@ const compactProp = pr => { const x = clone(pr); delete x.history; delete x.edic
 /* ============ Connection to Claude: diagnose, ask, explain ============ */
 const conn = { state: "checking" };
 let samplePromise = null;
+const diag = [];
+function d(msg) { diag.push(new Date().toTimeString().slice(0, 8) + "  " + msg); const el = $("#diagLog"); if (el) el.textContent = diag.join("\n"); }
+let TIERS = null;   // model tiers this view accepts; null = unknown → send none
+function tierOpt(t) { if (!TIERS) return {}; if (TIERS.includes(t)) return { modelTier: t }; if (TIERS.includes("default")) return { modelTier: "default" }; return {}; }
 function checkClaude() {
+  d("window.claude: " + (window.claude?.use ? "sí" : "NO"));
   if (!window.claude?.use) { conn.state = "no-runtime"; renderConn(); return; }
-  samplePromise = claude.use("sample").catch(() => null);
+  const t0 = Date.now();
+  samplePromise = claude.use("sample").catch(e => { d("use('sample') falló: " + (e?.code || e?.message || e)); return null; });
   samplePromise.then(async s => {
-    S.sample = s;
-    S.perms = await claude.use("permissions").catch(() => null);
-    const st = S.perms ? await S.perms.state("sample").catch(() => "unknown") : "unknown";
-    conn.state = !s ? "unavailable" : st === "unavailable" ? "unavailable" : st;   // granted | prompt | denied | unknown
+    S.sample = s; d(`use('sample'): ${s ? "función" : "null"} en ${Date.now() - t0} ms`);
+    if (s?.limits) { try { const L = await s.limits(); TIERS = Array.isArray(L?.modelTiers) ? L.modelTiers : null; d("modelTiers aceptados: " + (TIERS ? TIERS.join(", ") : "no informados")); } catch (e) { d("limits() falló: " + (e?.code || e)); } }
+    S.perms = await claude.use("permissions").catch(() => null); d("permissions: " + (S.perms ? "sí" : "no"));
+    const st = S.perms ? await S.perms.state("sample").catch(e => "error " + (e?.code || e)) : "unknown";
+    d("estado del permiso 'sample': " + st);
+    conn.state = !s ? "unavailable" : st === "unavailable" ? "unavailable" : ["granted", "prompt", "denied"].includes(st) ? st : "unknown";
     renderConn();
   });
 }
@@ -596,22 +604,31 @@ function renderConn(flash) {
     "no-runtime": ["warn", "<b>La página no está abierta dentro de Claude</b> (por ejemplo, el archivo .html abierto con doble clic). Ábrela desde <code>" + link + "</code>"]
   };
   const [tone, html] = M[conn.state] || M.unknown;
-  el.className = "notice" + (tone ? " " + tone : ""); el.hidden = conn.state === "granted" && !flash;
+  el.className = "notice" + (tone ? " " + tone : ""); el.hidden = conn.state === "granted" && !flash && !conn.lastError;
   el.innerHTML = html + (conn.lastError && conn.state !== "granted" ? `<div style="margin-top:6px;font-family:var(--mono);font-size:11.5px">${esc(conn.lastError)}</div>` : "") + (conn.state === "prompt" || conn.state === "unknown" ? ` <div class="row" style="margin-top:8px"><button class="btn primary sm" id="connAsk">Dar permiso</button></div>` : "")
     + (conn.state === "denied" || conn.state === "unavailable" ? ` <div class="row" style="margin-top:8px">${conn.state === "denied" ? `<button class="btn sm" id="connManage">Abrir permisos</button>` : ""}<button class="btn sm" id="connCopy">Copiar enlace</button></div>` : "");
   $("#connAsk")?.addEventListener("click", async () => {
     const btn = $("#connAsk"); btn.disabled = true; btn.textContent = "Esperando el aviso de Claude…";
-    const wait = setTimeout(() => { conn.lastError = "No apareció ningún aviso en 20 s. Busca el menú de Permisos de esta página (junto a su título) y activa Claude, o recarga e inténtalo otra vez."; renderConn(true); }, 20000);
+    const race = (p, ms, label) => Promise.race([p, new Promise((_, r) => setTimeout(() => r({ code: "timeout", message: label + ": sin respuesta en " + ms / 1000 + " s" }), ms))]);
     try {
-      // the documented path: the first real call asks the viewer for consent
-      await S.sample("Responde solo: OK", { modelTier: "quick", cache: false });
+      if (S.perms?.request) {
+        d("permissions.request(['sample']) …");
+        const r = await race(S.perms.request(["sample"]), 45000, "request").catch(e => { d("request falló: " + (e?.code || "") + " " + (e?.message || "")); return null; });
+        if (r) d("request respondió: " + JSON.stringify(r));
+      }
+      d("llamada de prueba a Claude " + JSON.stringify(tierOpt("quick")) + " …");
+      const out = await race(S.sample("Responde solo: OK", { ...tierOpt("quick"), cache: false }), 90000, "llamada de prueba");
+      d("Claude respondió: " + String(out?.text || "").slice(0, 40));
       conn.state = "granted"; conn.lastError = "";
     } catch (e) {
-      conn.state = e?.code === "not_granted" ? "denied" : "prompt";
+      d("ERROR: " + (e?.code || "") + " " + (e?.message || ""));
+      conn.state = e?.code === "not_granted" ? "denied" : conn.state === "granted" ? "granted" : "prompt";
       conn.lastError = `Claude respondió: ${e?.code || "error"}${e?.message ? " — " + e.message : ""}`;
     }
-    clearTimeout(wait); renderConn(true);
+    renderConn(true);
   });
+  el.insertAdjacentHTML("beforeend", `<details style="margin-top:8px" ${conn.lastError ? "open" : ""}><summary style="cursor:pointer;font-size:12px">Diagnóstico técnico</summary><pre id="diagLog" style="white-space:pre-wrap;font-family:var(--mono);font-size:11px;margin:6px 0">${esc(diag.join("\n"))}</pre><button class="btn sm" id="diagCopy">Copiar diagnóstico</button></details>`);
+  $("#diagCopy")?.addEventListener("click", () => { const t = diag.join("\n"); navigator.clipboard.writeText(t).then(() => toast("Diagnóstico copiado: pégalo en el chat")).catch(() => { const r = document.createRange(); r.selectNodeContents($("#diagLog")); getSelection().removeAllRanges(); getSelection().addRange(r); toast("Texto seleccionado: cópialo con Cmd/Ctrl + C"); }); });
   $("#connManage")?.addEventListener("click", () => S.perms?.manage().then(checkClaude).catch(() => toast("Abre el menú Permisos de esta página (arriba, junto al título) y activa Claude.")));
   $("#connCopy")?.addEventListener("click", () => navigator.clipboard.writeText(link).then(() => toast("Enlace copiado")).catch(() => toast(link)));
 }
