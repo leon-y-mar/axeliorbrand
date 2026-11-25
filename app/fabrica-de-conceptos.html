@@ -1,0 +1,1140 @@
+<title>Fábrica de Conceptos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<script type="application/json" id="claude-artifacts-manifest">{"permissions": []}</script>
+<style>
+/* Layout: estudio de dos columnas — deck a la izquierda (lo que se presenta), panel de control a la derecha (lo que se ajusta). */
+:root{
+  --bg:#F6F5FB; --surface:#FFFFFF; --sunk:#EEECF6; --line:#DEDAEC; --fg:#1A1828; --muted:#646079;
+  --accent:#5B3FF0; --accent-soft:#E7E1FF; --on-accent:#FFFFFF;
+  --ok:#1F7A4D; --warn:#A35B00; --bad:#B3261E;
+  --ui:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121119; --surface:#1B1A25; --sunk:#16151F; --line:#2E2C3D; --fg:#ECEAF6; --muted:#A19DB8;
+  --accent:#9A86FF; --accent-soft:#2C2550; --on-accent:#120F24; --ok:#5BC98F; --warn:#F0A84A; --bad:#F2867E; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121119; --surface:#1B1A25; --sunk:#16151F; --line:#2E2C3D; --fg:#ECEAF6; --muted:#A19DB8;
+  --accent:#9A86FF; --accent-soft:#2C2550; --on-accent:#120F24; --ok:#5BC98F; --warn:#F0A84A; --bad:#F2867E; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--ui);font-size:14px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+
+/* Top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.brand svg{width:22px;height:22px}
+.grow{flex:1 1 auto}
+.tabs{display:flex;gap:2px;overflow-x:auto;padding-bottom:0;scrollbar-width:none}
+.tab{appearance:none;border:0;background:none;padding:10px 12px;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;white-space:nowrap;font-weight:500}
+.tab[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.tab small{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:4px}
+select.proj{max-width:260px;min-width:0}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.ghost{border-color:transparent;background:none}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sm{padding:4px 9px;font-size:12px}
+input[type=text],select,textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 9px;min-width:0}
+textarea{width:100%;resize:vertical}
+.pill{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:99px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.run{background:var(--accent-soft);color:var(--accent)}
+.pill.ok{color:var(--ok)} .pill.warn{color:var(--warn)} .pill.bad{color:var(--bad)}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+h1,h2,h3{text-wrap:balance;margin:0;letter-spacing:-.015em}
+h2{font-size:20px} h3{font-size:15px}
+.muted{color:var(--muted)}
+.notice{border:1px solid var(--line);background:var(--sunk);border-radius:var(--r);padding:10px 12px;font-size:13px}
+.notice.warn{border-color:color-mix(in srgb,var(--warn) 40%,var(--line))}
+main{padding-block:20px 60px}
+.view[hidden]{display:none!important}
+
+/* Briefing view */
+.brief-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#briefText{min-height:280px;font-size:13.5px;line-height:1.55}
+.harness{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.agent{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;min-width:0;background:var(--surface)}
+.agent b{font-size:12.5px;font-weight:600}
+.agent span{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.agent[data-s="work"]{border-color:var(--accent);background:var(--accent-soft)}
+.agent[data-s="work"] span{color:var(--accent)}
+.agent[data-s="done"] span{color:var(--ok)}
+.agent[data-s="error"]{border-color:var(--bad)} .agent[data-s="error"] span{color:var(--bad)}
+.log{font-family:var(--mono);font-size:11.5px;max-height:260px;overflow:auto;background:var(--sunk);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:4px}
+.log div{display:grid;grid-template-columns:62px 110px minmax(0,1fr);gap:8px}
+.log .t{color:var(--muted)} .log .a{color:var(--accent)}
+.cand{display:grid;gap:8px}
+.cand-item{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:4px}
+.cand-item.sel{border-color:var(--accent);background:var(--accent-soft)}
+.cand-item b{font-size:15px}
+
+/* Framework view (mirrors the 3x3 board) */
+.fw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:6px solid var(--fg);background:var(--fg);gap:6px;border-radius:4px}
+.fw>section{background:var(--surface);padding:18px;min-height:220px;display:flex;flex-direction:column;gap:10px;min-width:0;
+  background-image:radial-gradient(var(--line) 1px,transparent 1.2px);background-size:16px 16px}
+.fw h3{font-size:16px}
+.fw .chip{background:var(--accent-soft);border-radius:8px;padding:7px 10px;font-size:13px}
+.fw [contenteditable]{outline:none;border-radius:6px}
+.fw [contenteditable]:focus{box-shadow:0 0 0 2px var(--accent)}
+.fw ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.fw ul li{background:var(--accent-soft);border-radius:8px;padding:6px 10px;font-size:13px}
+.fw .big{display:flex;flex-direction:column;justify-content:center;gap:14px;text-align:center}
+.fw .big .bi{font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.fw .big .lab{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.attr{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px}
+.attr div{background:var(--accent-soft);border-radius:8px;padding:6px 8px;font-size:12px}
+.attr.no div{background:var(--sunk);color:var(--muted)}
+.orbit{display:flex;flex-wrap:wrap;gap:4px}
+.orbit span{font-family:var(--mono);font-size:10.5px;border:1px solid var(--line);border-radius:99px;padding:1px 7px;color:var(--muted);background:var(--surface)}
+.vp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.vp div{display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;font-size:12px}
+.vp i{font-style:normal;width:54px;height:54px;border-radius:50%;background:#FFE59A;color:#3A2E00;display:grid;place-items:center;font-family:var(--mono);font-size:10px;font-weight:600}
+.research{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:20px}
+.research table{width:100%;border-collapse:collapse;font-size:12.5px}
+.research td,.research th{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left;vertical-align:top}
+.tblwrap{overflow-x:auto}
+
+/* Proposal view */
+.prop{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+.deck{display:flex;flex-direction:column;gap:18px;min-width:0}
+.deck-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.panel{position:sticky;top:calc(env(safe-area-inset-top,0px) + 112px);max-height:calc(100vh - 130px);overflow:auto;display:flex;flex-direction:column;gap:12px}
+.panel details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.panel summary{padding:11px 14px;cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.panel summary::after{content:"+";font-family:var(--mono);color:var(--muted)}
+.panel details[open] summary::after{content:"–"}
+.panel .pbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
+.sw{display:grid;grid-template-columns:34px minmax(0,1fr) 84px;gap:8px;align-items:center}
+.sw input[type=color]{width:34px;height:34px;border:1px solid var(--line);border-radius:8px;padding:2px;background:var(--surface);cursor:pointer}
+.sw .nm{font-size:12.5px;line-height:1.2} .sw .nm small{display:block;color:var(--muted);font-family:var(--mono);font-size:10.5px}
+.sw input[type=text]{font-family:var(--mono);font-size:12px;width:100%}
+.field{display:grid;gap:4px}
+.field>span{font-size:12px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1px solid var(--line);background:var(--sunk);border-radius:99px;padding:3px 10px;font-size:12px;cursor:pointer}
+.chips button:hover{border-color:var(--accent)}
+.hist{display:flex;flex-direction:column;gap:6px;font-size:12px}
+.hist div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.stars{display:flex;gap:4px}
+.stars button{border:1px solid var(--line);background:var(--surface);border-radius:6px;width:32px;height:30px;cursor:pointer;font-family:var(--mono)}
+.stars button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.qa{font-size:12.5px;display:grid;gap:6px}
+.qa .score{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Slides — 1280x720 canvas expressed in cqw so it scales */
+.slide{position:relative;aspect-ratio:16/9;width:100%;max-width:100%;container-type:inline-size;overflow:hidden;border-radius:6px;
+  background:var(--p5);color:var(--p4);font-family:var(--ft);box-shadow:0 1px 0 var(--line),0 10px 30px -18px rgba(20,16,50,.35)}
+.slide .in{position:absolute;inset:0;padding:5cqw 6cqw;display:flex;flex-direction:column}
+.slide .no{position:absolute;right:2.2cqw;bottom:1.8cqw;font-family:var(--mono);font-size:1cqw;opacity:.55;letter-spacing:.08em}
+.slide .kick{font-family:var(--mono);font-size:1.05cqw;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+.slide .disp{font-family:var(--fd);font-weight:var(--wd);line-height:.98;letter-spacing:-.01em}
+.slide p{margin:0}
+.s-dark{background:var(--p4);color:var(--p5)}
+.s-prim{background:var(--p1);color:var(--p5)}
+.lockup{display:inline-flex;align-items:center;gap:.35em;line-height:1}
+.lockup.stacked{flex-direction:column;gap:.18em}
+.lockup .sym{display:inline-flex;width:1.15em;height:1.15em}
+.lockup .sym svg{width:100%;height:100%}
+.lockup.stacked .sym{width:1.6em;height:1.6em}
+.lockup .wm{font-family:var(--fd);white-space:nowrap}
+.lockup.symbol .wm{display:none}
+.lockup.wordmark .sym{display:none}
+.c1{fill:var(--p1)} .c2{fill:var(--p2)} .c3{fill:var(--p3)} .c4{fill:var(--p4)} .c5{fill:var(--p5)}
+.s-ico svg{width:100%;height:100%}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:3cqw;flex:1;min-height:0}
+.mb{display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(4,1fr);gap:.8cqw;flex:1;min-height:0;margin-top:2cqw}
+.mb>div{border-radius:.5cqw;overflow:hidden;position:relative;display:flex;padding:1.2cqw;min-height:0}
+.mb .cap{font-family:var(--mono);font-size:.85cqw;letter-spacing:.06em;text-transform:uppercase;opacity:.8}
+.mb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.axis{display:grid;grid-template-columns:12cqw 1fr 12cqw;gap:1.5cqw;align-items:center;font-size:1.4cqw}
+.axis .bar{height:.35cqw;background:currentColor;opacity:.25;position:relative;border-radius:1cqw}
+.axis .dot{position:absolute;top:50%;width:1.8cqw;height:1.8cqw;border-radius:50%;background:var(--p1);transform:translate(-50%,-50%);opacity:1}
+.axis .r{text-align:right}
+.swatches{display:flex;gap:1cqw;flex:1;min-height:0;margin-top:2.5cqw}
+.swatches>div{border-radius:.6cqw;padding:1.4cqw;display:flex;flex-direction:column;justify-content:flex-end;gap:.3cqw;min-width:0;font-size:1.05cqw}
+.swatches b{font-size:1.5cqw}
+.swatches code{font-family:var(--mono);font-size:1cqw}
+.ratio{display:flex;height:1.4cqw;border-radius:.4cqw;overflow:hidden;margin-top:1.5cqw}
+.icons{display:grid;grid-template-columns:repeat(6,1fr);gap:1.6cqw}
+.icons div{aspect-ratio:1;border-radius:.6cqw;background:color-mix(in srgb,var(--p1) 10%,var(--p5));display:grid;place-items:center;padding:2.2cqw;color:var(--p4)}
+.icons div svg{width:100%;height:100%}
+.icons small{display:block;text-align:center;font-family:var(--mono);font-size:.9cqw;margin-top:.6cqw;opacity:.7}
+.pat{display:grid;grid-template-columns:repeat(10,1fr);overflow:hidden;border-radius:.6cqw}
+.pat svg{width:100%;height:auto;display:block}
+.apps{display:grid;grid-template-columns:1.1fr .9fr 1fr;gap:2cqw;flex:1;min-height:0;margin-top:2cqw;align-items:center}
+.mock-card{aspect-ratio:85/55;border-radius:.6cqw;padding:1.8cqw;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 1.2cqw 2.4cqw -1.4cqw rgba(0,0,0,.45)}
+.mock-post{aspect-ratio:1;border-radius:.6cqw;padding:2cqw;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;position:relative}
+.mock-sign{aspect-ratio:4/3;display:flex;flex-direction:column;border-radius:.4cqw;overflow:hidden}
+.mock-sign .aw{height:22%;background:repeating-linear-gradient(90deg,var(--p1) 0 3cqw,var(--p5) 3cqw 6cqw)}
+.mock-sign .bd{flex:1;background:var(--p4);display:grid;place-items:center;color:var(--p5)}
+.vers{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4cqw;flex:1;min-height:0;margin-top:2.5cqw}
+.vers>div{border-radius:.6cqw;display:grid;place-items:center;font-size:2.6cqw;position:relative}
+.vers small{position:absolute;left:1cqw;bottom:.8cqw;font-family:var(--mono);font-size:.85cqw;opacity:.75}
+.bridge{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4cqw;margin-top:3cqw}
+.bridge div{border-top:.25cqw solid var(--p1);padding-top:1.2cqw;font-size:1.25cqw;line-height:1.4}
+.bridge b{display:block;font-family:var(--fd);font-weight:var(--wd);font-size:1.7cqw;margin-bottom:.5cqw;line-height:1.05}
+
+/* Present mode */
+.present{position:fixed;inset:0;z-index:50;background:#000;display:grid;place-items:center;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.present .stage{width:min(100vw,calc(100vh*16/9))}
+.present .bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;background:rgba(30,30,40,.85);color:#fff;padding:6px;border-radius:10px}
+.present .bar button{background:none;border:0;color:#fff;padding:6px 10px;cursor:pointer;font-family:var(--mono)}
+
+/* Memory view */
+.mem{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start}
+.lesson{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;border-bottom:1px solid var(--line);padding-block:10px}
+.lesson .k{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:99px;background:var(--sunk);color:var(--muted);text-transform:uppercase}
+.lesson p{margin:0} .lesson small{color:var(--muted)}
+.empty{border:1px dashed var(--line);border-radius:var(--r);padding:22px;text-align:center;color:var(--muted)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;z-index:60}
+@media (max-width:1020px){.prop{grid-template-columns:1fr}.panel{position:static;max-height:none}.brief-grid,.mem{grid-template-columns:1fr}}
+@media (max-width:760px){.fw{grid-template-columns:1fr}.harness{grid-template-columns:repeat(2,minmax(0,1fr))}.research{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap top-row">
+    <div class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="9" height="9" rx="2" fill="var(--accent)"/><circle cx="17.5" cy="6.5" r="4.5" fill="none" stroke="var(--accent)" stroke-width="2"/><path d="M2 22l4.5-8 4.5 8z" fill="none" stroke="var(--fg)" stroke-width="2" stroke-linejoin="round"/><rect x="13" y="13" width="9" height="9" rx="4.5" fill="var(--fg)"/></svg>Fábrica de conceptos</div>
+    <select class="proj" id="projSel" aria-label="Proyecto"></select>
+    <button class="btn sm" id="newProj">+ Nuevo briefing</button>
+    <span class="pill" id="phasePill">—</span>
+    <span class="grow"></span>
+    <span class="pill" id="storePill" title="Dónde se guardan tus proyectos">…</span>
+    <button class="btn sm" id="installBtn" hidden>Instalar en el escritorio</button>
+  </div>
+  <nav class="wrap tabs" role="tablist" id="tabs">
+    <button class="tab" role="tab" data-v="briefing">Briefing y agentes</button>
+    <button class="tab" role="tab" data-v="framework">Framework</button>
+    <button class="tab" role="tab" data-v="propuesta-a">Propuesta A <small id="tabA"></small></button>
+    <button class="tab" role="tab" data-v="propuesta-b">Propuesta B <small id="tabB"></small></button>
+    <button class="tab" role="tab" data-v="memoria">Memoria del estudio <small id="tabM"></small></button>
+  </nav>
+</header>
+
+<main class="wrap">
+  <div id="sampleNote" class="notice" style="margin-bottom:16px" hidden></div>
+
+  <!-- BRIEFING -->
+  <section class="view" id="v-briefing">
+    <div class="brief-grid">
+      <div class="card">
+        <div class="row"><h2 class="grow">Briefing</h2><label class="btn sm" for="briefFile">Subir .txt / .md</label><input type="file" id="briefFile" accept=".txt,.md,.markdown,text/plain" hidden></div>
+        <div class="field"><span>Nombre del proyecto</span><input type="text" id="projName" placeholder="Ej. Bodega Comunal — rebranding"></div>
+        <textarea id="briefText" placeholder="Pega aquí el briefing del cliente: qué hace la marca, a quién le habla, competencia, tono, restricciones, lo que el cliente ama y lo que odia…"></textarea>
+        <label class="row" style="gap:8px;font-size:13px"><input type="checkbox" id="pauseChk" checked> Pausar después de la estrategia para que yo revise el framework y las big ideas</label>
+        <div class="row">
+          <button class="btn primary" id="runBtn">Iniciar la fábrica</button>
+          <button class="btn" id="stopBtn" hidden>Detener</button>
+          <span class="muted" id="runHint" style="font-size:12.5px"></span>
+        </div>
+        <div id="noSample" class="notice warn" hidden>Los agentes necesitan Claude. Abre esta página en claude.ai o en la app de escritorio de Claude y acepta el permiso cuando lo pida. Mientras tanto puedes explorar y editar el ejemplo.</div>
+      </div>
+      <div class="card">
+        <div class="row"><h2 class="grow">El harness</h2><span class="label">7 agentes · 2 fases · 1 control de calidad</span></div>
+        <div class="harness" id="harness"></div>
+        <div class="log" id="log" aria-live="polite"></div>
+        <div id="review" hidden class="cand"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FRAMEWORK -->
+  <section class="view" id="v-framework" hidden>
+    <div class="row" style="margin-bottom:12px"><h2 class="grow">Framework de marca</h2><span class="muted" style="font-size:12.5px">Haz clic en cualquier texto para editarlo. Los agentes leen esta versión.</span></div>
+    <div class="fw" id="fw"></div>
+    <div class="research" id="research"></div>
+  </section>
+
+  <!-- PROPOSALS -->
+  <section class="view" id="v-propuesta-a" hidden></section>
+  <section class="view" id="v-propuesta-b" hidden></section>
+
+  <!-- MEMORY -->
+  <section class="view" id="v-memoria" hidden>
+    <div class="mem">
+      <div class="card">
+        <div class="row"><h2 class="grow">Lo que el estudio aprendió</h2><span class="pill" id="memCount"></span></div>
+        <p class="muted" style="margin:0">Cada lección se lee al inicio de cada agente en los próximos briefings. Bórrala si ya no aplica; agrega las tuyas.</p>
+        <div id="lessons"></div>
+        <div class="row"><input type="text" id="newLesson" class="grow" placeholder="Escribe una lección propia, ej. “Nunca más de 2 familias tipográficas”"><button class="btn" id="addLesson">Agregar</button></div>
+      </div>
+      <div class="card">
+        <h2>Cerrar la ronda de este proyecto</h2>
+        <p class="muted" style="margin:0">Califica cada propuesta en su panel, elige tu favorita y presiona aprender. El Manager compara lo que pediste, lo que editaste a mano y lo que calificaste, y lo destila en lecciones.</p>
+        <div id="roundSummary" class="qa"></div>
+        <div class="row"><button class="btn primary" id="learnBtn">Aprender de este proyecto</button><span class="muted" id="learnHint" style="font-size:12.5px"></span></div>
+        <hr style="border:0;border-top:1px solid var(--line);width:100%">
+        <h3>Exportar</h3>
+        <div class="row"><button class="btn sm" id="expJson">Proyecto (.json)</button><button class="btn sm" id="expMem">Memoria (.md)</button><label class="btn sm" for="impJson">Importar proyecto (.json)</label><input type="file" id="impJson" accept=".json,application/json" hidden></div>
+        <p class="muted" style="margin:0;font-size:12.5px">El .json se puede llevar a la versión de Claude Code del repositorio. La memoria en .md se pega en <code>memoria/aprendizajes.md</code> para que ambos sistemas compartan lo aprendido.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+"use strict";
+/* ============ Utilities ============ */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const clone = o => JSON.parse(JSON.stringify(o));
+const arr = x => Array.isArray(x) ? x : (x == null || x === "" ? [] : [x]);
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+function toast(msg) { const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.append(t); setTimeout(() => t.remove(), 2600); }
+const hexOk = h => /^#[0-9a-f]{6}$/i.test(h || "");
+function lum(hex) { const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; }
+function contrast(a, b) { if (!hexOk(a) || !hexOk(b)) return 0; const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return (x + .05) / (y + .05); }
+
+/* ============ Font catalog (Google Fonts, verified families) ============ */
+const FONTS = ["Bricolage Grotesque","Figtree","Inter","Geist","Manrope","DM Sans","Work Sans","Rubik","Poppins","Montserrat","Outfit","Plus Jakarta Sans","Sora","Space Grotesk","Syne","Unbounded","Archivo","Archivo Black","Anton","Bebas Neue","Oswald","Barlow","Barlow Condensed","Bungee","Rubik Mono One","Righteous","Lexend","Epilogue","Familjen Grotesk","Instrument Sans","Instrument Serif","Fraunces","Playfair Display","DM Serif Display","Libre Baskerville","Cormorant Garamond","EB Garamond","Lora","Merriweather","Young Serif","Gloock","Abril Fatface","Space Mono","IBM Plex Sans","IBM Plex Mono","JetBrains Mono","Chivo","Big Shoulders Display","Red Hat Display","Albert Sans","Schibsted Grotesk","Hanken Grotesk","Onest","Nunito","Quicksand","Baloo 2","Lilita One","Shrikhand","Dela Gothic One","Krona One","Caveat","Permanent Marker"];
+const loadedFonts = new Set();
+function loadFont(fam, w) {
+  if (!fam || !FONTS.includes(fam)) return;
+  const key = fam + "|" + (w || 400);
+  if (loadedFonts.has(key)) return; loadedFonts.add(key);
+  const l = document.createElement("link"); l.rel = "stylesheet";
+  const f = encodeURIComponent(fam).replace(/%20/g, "+");
+  // one request per weight: a weight a family lacks fails alone, the regular face still loads
+  l.href = "https://fonts.googleapis.com/css2?family=" + f + (w && +w !== 400 ? ":wght@" + (+w) : "") + "&display=swap";
+  document.head.append(l);
+  if (w && +w !== 400) loadFont(fam, 400);
+}
+
+/* ============ SVG sanitizer (Claude's SVG is data, rebuilt from an allowlist) ============ */
+const NS = "http://www.w3.org/2000/svg";
+const S_TAGS = new Set(["svg","g","path","circle","rect","ellipse","line","polyline","polygon"]);
+const S_ATTR = new Set(["viewBox","d","cx","cy","r","rx","ry","x","y","width","height","x1","y1","x2","y2","points","fill","stroke","stroke-width","stroke-linecap","stroke-linejoin","fill-rule","clip-rule","transform","opacity","class"]);
+function buildSvg(str) {
+  if (!str || typeof str !== "string") return null;
+  let doc; try { doc = new DOMParser().parseFromString(str, "image/svg+xml"); } catch { return null; }
+  const root = doc.documentElement;
+  if (!root || root.nodeName !== "svg" || doc.getElementsByTagName("parsererror").length) return null;
+  const walk = src => {
+    if (!S_TAGS.has(src.nodeName)) return null;
+    const el = document.createElementNS(NS, src.nodeName);
+    for (const a of src.attributes) {
+      if (!S_ATTR.has(a.name)) continue;
+      const v = a.value.trim();
+      if ((a.name === "fill" || a.name === "stroke") && !/^(none|currentColor|#[0-9a-f]{3,8})$/i.test(v)) continue;
+      if (a.name === "class") { const c = v.split(/\s+/).filter(x => /^c[1-5]$/.test(x)).join(" "); if (c) el.setAttribute("class", c); continue; }
+      if (!/^[-\w\s.,#()%]*$/.test(v)) continue;
+      el.setAttribute(a.name, v);
+    }
+    for (const ch of src.children) { const k = walk(ch); if (k) el.append(k); }
+    return el;
+  };
+  const out = walk(root);
+  if (out) { out.removeAttribute("width"); out.removeAttribute("height"); out.setAttribute("aria-hidden", "true"); }
+  return out;
+}
+const svgHTML = s => { const el = buildSvg(s); return el ? el.outerHTML : ""; };
+
+/* ============ Storage: db (per person, private) → fallback to this browser ============ */
+const store = {
+  db: null, id: null, mode: "local",
+  async init() {
+    try {
+      if (!window.claude?.use) return;
+      const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+      if (db && user) { const id = await user.id(); if (id) { this.db = db; this.id = id; this.mode = "db"; } }
+    } catch { }
+  },
+  base() { return "data/users/" + this.id; },
+  timeout(p) { return Promise.race([p, new Promise((_, r) => setTimeout(() => r(new Error("timeout")), 10000))]); },
+  async load() {
+    if (this.db) {
+      try {
+        const snap = await this.timeout(this.db.doc(this.base() + "/profile").collection("projects").get());
+        const m = await this.timeout(this.db.doc(this.base() + "/memory").get());
+        return { projects: snap.docs.map(d => d.data()).filter(Boolean), memory: m.exists ? m.data() : null };
+      } catch { this.db = null; this.mode = "local"; }
+    }
+    try { return JSON.parse(localStorage.getItem("fabrica.v1") || "null") || { projects: [], memory: null }; } catch { return { projects: [], memory: null }; }
+  },
+  queue: new Map(), busy: new Set(),
+  saveProject(p) { if (p.sample) return; this.queue.set(p.id, p); this.flush(p.id); },
+  async flush(id) {
+    if (this.busy.has(id)) return;
+    const p = this.queue.get(id); if (!p) return;
+    this.queue.delete(id); this.busy.add(id);
+    try {
+      if (this.db) await this.db.doc(this.base() + "/profile").collection("projects").doc(id).set(clone(p));
+      else this.local();
+    } catch (e) { toast("No se pudo guardar: " + (e.code || e.message)); }
+    this.busy.delete(id);
+    if (this.queue.has(id)) this.flush(id);
+  },
+  async removeProject(id) { try { if (this.db) await this.db.doc(this.base() + "/profile").collection("projects").doc(id).delete(); else this.local(); } catch { } },
+  async saveMemory(m) { try { if (this.db) await this.db.doc(this.base() + "/memory").set(clone(m)); else this.local(); } catch (e) { toast("No se pudo guardar la memoria"); } },
+  local() { try { localStorage.setItem("fabrica.v1", JSON.stringify({ projects: S.projects.filter(p => !p.sample), memory: S.memory })); } catch { } }
+};
+let saveTimer = null;
+function saveSoon(p) { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.saveProject(p), 700); }
+
+/* ============ The agents (the same roles live in the repo as .claude/agents/*.md) ============ */
+const MINDSET = `Trabajas en "Fábrica de conceptos", un estudio de branding. Principios innegociables del estudio:
+- Diseño es estrategia: toda decisión visual se justifica desde el framework (atributos, misión, visión, público, propuesta de valor, ventaja). Si no puedes decir POR QUÉ, no lo propongas.
+- Cocinar antes de plasmar: explora significados, tensiones e insights antes de decidir formas.
+- Dirección, no acabado final: entrega una dirección clara y convincente a media-alta fidelidad que un diseñador humano luego pule. Evita lo genérico y lo obvio de la categoría.
+- El branding está en los detalles: nombra cosas concretas (un material, un gesto, un código cultural real), no adjetivos vacíos.
+- Honestidad: si algo es una hipótesis (por ejemplo datos de competidores que no puedes verificar), márcalo como hipótesis. Nunca inventes datos ni cifras.
+- Escribe en español neutro latinoamericano.`;
+
+const AGENTS = {
+  manager:   { name: "Manager",            rol: "Diriges el proyecto. Conviertes un briefing desordenado en un framework claro, detectas vacíos de información, eliges entre opciones con criterio y cuidas que las dos propuestas sean realmente distintas entre sí." },
+  research:  { name: "Benchmark y research", rol: "Investigas como un estratega: exploras las palabras clave (significados, etimología, asociaciones culturales), analizas a los competidores y sus códigos visuales, y encuentras tensiones y territorios libres. Distingues lo que sabes de lo que supones." },
+  redactor:  { name: "Redacción creativa",  rol: "Eres redactor publicitario senior. Conviertes insights en big ideas memorables: una frase-idea que podría sostener una marca durante años (como 'Felicidad en una botella'). Escribes corto, concreto y con ritmo." },
+  branding:  { name: "Dirección de branding", rol: "Traduces una big idea en un universo visual: personalidad, moodboard, tipografía y color. Cada elección tiene un porqué que conecta con la idea y con el público." },
+  diseno:    { name: "Diseño gráfico",      rol: "Diseñas el logotipo y los recursos gráficos como dirección: un símbolo geométrico simple, memorable y reproducible, un wordmark bien espaciado y un patrón de marca. Simplicidad sobre detalle." },
+  ilustrador:{ name: "Ilustración",         rol: "Diseñas un set de íconos coherente: misma retícula, mismo grosor, mismas terminaciones, y un estilo que expresa la personalidad de la propuesta." },
+  critico:   { name: "Crítico (QA)",        rol: "Eres director creativo exigente. Evalúas con una rúbrica, no con gusto personal. Señalas lo genérico, lo incoherente con el framework y lo que no se puede reproducir. Pides una revisión solo si de verdad mejora la propuesta." }
+};
+const AGENT_ORDER = ["manager", "research", "redactor", "branding", "diseno", "ilustrador", "critico"];
+
+const SCHEMA = {
+  framework: `{"framework":{"marca":"nombre de la marca (o 'Sin nombre' si no lo hay)","sector":"","atributos":{"son":[{"nombre":"","porque":""}],"noSon":[""]},"vision":"","visionPalabras":["6 palabras-eje"],"mision":"","misionPalabras":["6 palabras-eje"],"productos":[""],"servicios":[""],"target":[""],"competidores":[{"nombre":"","nota":""}],"propuestaValor":{"que":"","como":"","resultado":""},"stakeholders":[""],"ventaja":{"nucleo":"una frase","puntos":[""]},"keywords":["8-12 palabras clave"],"vacios":["preguntas que el briefing no responde"]}}`,
+  research: `{"exploracion":[{"palabra":"","significados":"","asociaciones":"","angulo":"cómo podría usarse"}],"benchmark":[{"nombre":"","posicionamiento":"","codigosVisuales":"","oportunidad":"","certeza":"conocido|hipotesis"}],"tensiones":["insights en forma de tensión: 'quieren X pero sienten Y'"],"territorios":[{"nombre":"","descripcion":""}]}`,
+  ideas: `{"candidatas":[{"bigIdea":"máx. 6 palabras","tagline":"","insight":"","territorio":"","porque":""}]}`,
+  seleccion: `{"porque":"por qué estas dos y por qué son distintas entre sí","propuestas":[{"bigIdea":"","tagline":"","insight":"","concepto":"párrafo de 60-90 palabras que narra la idea","conexionFramework":[{"pilar":"Atributo/Target/Ventaja/etc.","como":"cómo la idea lo expresa"}]}]}`,
+  branding: `{"personalidad":[{"izq":"Rebelde","der":"Conservadora","valor":0}],"arquetipo":"","tono":"","moodboard":{"palabras":["5 palabras sensoriales"],"texturas":["2 de: puntos, lineas, grano, reticula, ondas, bloques"],"fotografia":"dirección de fotografía concreta","referencias":[{"descripcion":"","busqueda":"términos de búsqueda para Pinterest/Behance"}],"composicion":""},"tipografia":{"display":{"familia":"","peso":700,"porque":""},"texto":{"familia":"","peso":400,"porque":""}},"colores":[{"nombre":"","hex":"#RRGGBB","rol":"primario","porque":""}]}`,
+  diseno: `{"logo":{"tipo":"combinado|wordmark|monograma","texto":"","mayusculas":false,"tracking":0,"peso":700,"disposicion":"horizontal|stacked","simbolo_svg":"<svg viewBox='0 0 100 100'>…</svg>","racional":""},"patron_svg":"<svg viewBox='0 0 40 40'>…</svg>","aplicaciones":{"tarjeta":{"titular":"","texto":""},"post":{"titular":"","texto":""},"letrero":{"titular":"","texto":""}}}`,
+  iconos: `{"estiloIconos":"","iconos":[{"nombre":"","svg":"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>…</svg>"}]}`,
+  qa: `{"puntaje":{"coherencia":0,"originalidad":0,"diferenciacion":0,"ejecucion":0,"total":0},"fortalezas":[""],"observaciones":[""],"revisar":"ninguno|branding|diseno|iconos","instruccion":"qué cambiar exactamente, si revisar no es ninguno"}`,
+  ajuste: `{"resumen":"qué cambiaste en una frase","cambios":{"…solo las claves de la propuesta que cambian, con su valor COMPLETO nuevo…":null}}`,
+  aprender: `{"lecciones":[{"texto":"regla accionable en una frase","tipo":"preferencia|evitar|proceso","evidencia":"de dónde sale"}]}`
+};
+
+const SVG_RULES = `Reglas de SVG: solo elementos svg, g, path, circle, rect, ellipse, line, polyline, polygon. Sin texto, sin <defs>, sin gradientes, sin estilos ni scripts. Para color usa class="c1" (primario), "c2" (secundario), "c3" (acento), "c4" (oscuro) o "c5" (claro), o fill="currentColor". Coordenadas enteras, formas simples.`;
+
+const TASKS = {
+  framework: `Lee el briefing y llena el framework del estudio. Usa solo lo que el briefing dice o implica con claridad; donde falte información, escribe una propuesta breve y agrega la pregunta correspondiente a "vacios". 5 atributos que SÍ son la marca (con su porqué) y 5 que NO son.`,
+  research: `Explora 6-8 palabras clave del framework como lo haría un estratega con diccionario y libros: significados, etimología si aporta, asociaciones culturales en el contexto del público. Luego haz un benchmark de los competidores del framework (y 1-2 referentes de otras categorías si ayudan): posicionamiento, códigos visuales típicos y la oportunidad que dejan libre. Marca "certeza":"hipotesis" en todo lo que no conozcas con seguridad. Termina con 3-5 tensiones (insights) y 3-4 territorios creativos posibles.`,
+  ideas: `Escribe 6 big ideas candidatas, cada una de un territorio distinto. Una big idea es una frase corta que puede sostener la marca por años (ej. Coca-Cola: "Felicidad en una botella" o "Momentos en familia"). Cada una con tagline, el insight que la sostiene y por qué funciona con este público.`,
+  seleccion: `Elige las 2 big ideas candidatas más fuertes Y más distintas entre sí (deben llevar a universos visuales opuestos, no a variaciones). Puedes pulir su redacción. Para cada una escribe el concepto narrado y conecta la idea con al menos 4 pilares del framework.`,
+  branding: `Construye el universo visual de esta big idea.
+- personalidad: 5 ejes en este orden: Rebelde/Conservadora, Moderna/Clásica, Cálida/Fría, Lúdica/Seria, Popular/Exclusiva. valor 0 = totalmente el lado izquierdo, 100 = el derecho.
+- tipografia: elige familias SOLO de este catálogo de Google Fonts: ${FONTS.join(", ")}. Display y texto deben ser familias distintas. peso entre 400 y 900.
+- colores: EXACTAMENTE 5, en este orden de rol: primario, secundario, acento, oscuro (para texto), claro (para fondos). El oscuro sobre el claro debe tener contraste de al menos 7:1.
+- moodboard.referencias: 3 referencias reales y concretas (movimientos, oficios, códigos culturales, fotógrafos o estilos que existen), con términos de búsqueda.
+Si recibes la otra propuesta, diferénciate a propósito en tipografía, color y personalidad.`,
+  diseno: `Diseña la dirección de logotipo y recursos gráficos.
+- logo.simbolo_svg: un símbolo con viewBox "0 0 100 100", máximo 6 formas, que exprese la big idea (explica la metáfora en "racional"). ${SVG_RULES}
+- logo.texto: el nombre de la marca tal como se escribe en el wordmark. tracking en em entre -0.05 y 0.2.
+- patron_svg: un módulo con viewBox "0 0 40 40" que al repetirse en retícula forme un patrón de marca derivado del símbolo. ${SVG_RULES}
+- aplicaciones: textos cortos (titular máx. 6 palabras) para tarjeta de presentación, post de redes y letrero de punto de venta, en el tono de la propuesta.`,
+  iconos: `Diseña 6 íconos para los productos/servicios/beneficios más importantes de la marca. viewBox "0 0 24 24", solo trazos (fill="none" stroke="currentColor") con el mismo stroke-width, stroke-linecap y stroke-linejoin en todos, definidos en el elemento svg. Estilo coherente con la personalidad. ${SVG_RULES}`,
+  qa: `Evalúa la propuesta con esta rúbrica (0-10 cada una): coherencia con el framework, originalidad (¿se ve como el resto de la categoría?), diferenciación frente a la otra propuesta, ejecución (legibilidad, contraste, reproducibilidad del símbolo a tamaño pequeño). total = promedio. Considera los chequeos automáticos que se adjuntan; son mediciones, no opiniones. Pide revisar UNA parte solo si el total es menor a 7 y la revisión lo resolvería.`,
+  ajuste: `El diseñador humano pide un ajuste a esta propuesta. Aplícalo con criterio de estudio: cambia lo que pide y lo que deba cambiar para mantener coherencia, nada más. Devuelve en "cambios" solo las claves de primer nivel que cambian (posibles: bigIdea, tagline, insight, concepto, conexionFramework, personalidad, arquetipo, tono, moodboard, tipografia, colores, logo, patron_svg, aplicaciones, estiloIconos, iconos), cada una con su valor completo. Respeta las mismas reglas de formato: colores exactamente 5 en orden primario, secundario, acento, oscuro, claro; tipografías del catálogo (${FONTS.join(", ")}). ${SVG_RULES}`,
+  aprender: `Eres el Manager cerrando una ronda. Compara lo que los agentes propusieron con lo que el diseñador humano hizo: sus calificaciones, notas, ajustes pedidos por prompt y ediciones manuales (cada edición manual es una corrección: es la señal más fuerte). Destila lecciones accionables y generalizables para futuros briefings (no específicas de esta marca, salvo que sean preferencias de proceso). Fusiona con las lecciones existentes: no dupliques, actualiza las que se contradigan, máximo 20 en total, las más útiles primero. Devuelve la lista COMPLETA resultante.`
+};
+
+/* ============ App state ============ */
+const S = { projects: [], current: null, memory: { lecciones: [], proyectos: 0 }, view: "briefing", sample: null, ctl: null, running: false, agentState: {} };
+const cur = () => S.projects.find(p => p.id === S.current);
+
+/* ============ Calling Claude ============ */
+function memoryText() {
+  const l = S.memory.lecciones || [];
+  return l.length ? l.map((x, i) => `${i + 1}. [${x.tipo}] ${x.texto}`).join("\n") : "(todavía no hay lecciones: es uno de los primeros briefings)";
+}
+function log(p, agent, msg) {
+  p.log = p.log || []; const t = new Date();
+  p.log.push({ t: t.toTimeString().slice(0, 8), a: agent, m: msg });
+  if (p.log.length > 200) p.log.shift();
+  if (p.id === S.current) renderLog();
+}
+function setAgent(k, s, note) { S.agentState[k] = { s, note }; renderHarness(); }
+
+async function agent(p, key, task, data, schema, tier = "default") {
+  if (!S.sample) throw { code: "no_sample", message: "Claude no está disponible en esta vista" };
+  const a = AGENTS[key];
+  const prompt = `${MINDSET}
+
+# Tu rol: ${a.name}
+${a.rol}
+
+# Lecciones de briefings anteriores (memoria del estudio — respétalas)
+${memoryText()}
+
+# Tarea
+${task}
+
+# Datos de entrada
+${JSON.stringify(data, null, 1).slice(0, 60000)}
+
+# Formato de salida
+Responde SOLO con un objeto JSON válido con esta forma (sin comentarios ni texto extra):
+${schema}`;
+  setAgent(key, "work", "pensando…"); log(p, a.name, "empieza");
+  const t0 = Date.now();
+  try {
+    const out = await S.sample.json(prompt, {
+      modelTier: tier, signal: S.ctl?.signal,
+      onText: ({ text }) => setAgent(key, "work", `escribiendo · ${text.length} car.`)
+    });
+    setAgent(key, "done", `listo · ${Math.round((Date.now() - t0) / 1000)} s`);
+    log(p, a.name, `terminó en ${Math.round((Date.now() - t0) / 1000)} s`);
+    return out || {};
+  } catch (e) {
+    setAgent(key, "error", e.code || "error");
+    log(p, a.name, "error: " + (e.code || "") + " " + (e.message || ""));
+    throw e;
+  }
+}
+function errCopy(e) {
+  return ({
+    not_granted: "No se dio permiso para usar Claude en esta página. Recarga y acepta el permiso para que los agentes trabajen.",
+    rate_limited: "Llegaste al límite de uso por ahora. Espera unos minutos y vuelve a intentarlo.",
+    cancelled: "Detenido.", invalid_json: "Un agente respondió en un formato que no se pudo leer. Vuelve a intentarlo; si se repite, simplifica el briefing.",
+    no_sample: "Los agentes necesitan abrir esta página en claude.ai o en la app de Claude.", prompt_too_large: "El briefing es demasiado largo. Resúmelo a lo esencial."
+  })[e?.code] || ("Algo falló: " + (e?.message || e?.code || "error desconocido"));
+}
+
+/* ============ Normalizers (the harness never trusts shape) ============ */
+function normFramework(f = {}) {
+  const fw = f.framework || f;
+  return {
+    marca: fw.marca || "Sin nombre", sector: fw.sector || "",
+    atributos: { son: arr(fw.atributos?.son).map(a => typeof a === "string" ? { nombre: a, porque: "" } : { nombre: a.nombre || "", porque: a.porque || "" }), noSon: arr(fw.atributos?.noSon).map(String) },
+    vision: fw.vision || "", visionPalabras: arr(fw.visionPalabras).map(String).slice(0, 6),
+    mision: fw.mision || "", misionPalabras: arr(fw.misionPalabras).map(String).slice(0, 6),
+    productos: arr(fw.productos).map(String), servicios: arr(fw.servicios).map(String), target: arr(fw.target).map(String),
+    competidores: arr(fw.competidores).map(c => typeof c === "string" ? { nombre: c, nota: "" } : { nombre: c.nombre || "", nota: c.nota || "" }),
+    propuestaValor: { que: fw.propuestaValor?.que || "", como: fw.propuestaValor?.como || "", resultado: fw.propuestaValor?.resultado || "" },
+    stakeholders: arr(fw.stakeholders).map(String),
+    ventaja: { nucleo: fw.ventaja?.nucleo || "", puntos: arr(fw.ventaja?.puntos).map(String) },
+    keywords: arr(fw.keywords).map(String), vacios: arr(fw.vacios).map(String)
+  };
+}
+const AXES = [["Rebelde", "Conservadora"], ["Moderna", "Clásica"], ["Cálida", "Fría"], ["Lúdica", "Seria"], ["Popular", "Exclusiva"]];
+const ROLES = ["primario", "secundario", "acento", "oscuro", "claro"];
+const DEFAULT_COLORS = ["#3B2FC9", "#F2A93B", "#E8505B", "#16152B", "#FAF9FF"];
+function normProposal(pr) {
+  pr.personalidad = AXES.map(([l, r], i) => { const x = arr(pr.personalidad)[i] || {}; return { izq: x.izq || l, der: x.der || r, valor: clamp(Number.isFinite(+x.valor) && x.valor !== "" && x.valor != null ? +x.valor : 50, 0, 100) }; });
+  const cs = arr(pr.colores);
+  pr.colores = ROLES.map((rol, i) => { const c = cs[i] || {}; return { nombre: c.nombre || rol, hex: hexOk(c.hex) ? c.hex.toUpperCase() : DEFAULT_COLORS[i], rol, porque: c.porque || "" }; });
+  const t = pr.tipografia || {};
+  const fix = (x, def, w) => ({ familia: FONTS.includes(x?.familia) ? x.familia : def, peso: clamp(Math.round((+x?.peso || w) / 100) * 100, 300, 900), porque: x?.porque || "" });
+  pr.tipografia = { display: fix(t.display, "Bricolage Grotesque", 700), texto: fix(t.texto, "Figtree", 400) };
+  pr.moodboard = Object.assign({ palabras: [], texturas: ["grano", "puntos"], fotografia: "", referencias: [], composicion: "", imagenes: [] }, pr.moodboard || {});
+  pr.moodboard.imagenes = arr(pr.moodboard.imagenes);
+  pr.logo = Object.assign({ tipo: "combinado", texto: "marca", mayusculas: false, tracking: 0, peso: pr.tipografia.display.peso, disposicion: "horizontal", simbolo_svg: "", racional: "" }, pr.logo || {});
+  pr.logo.tracking = clamp(+pr.logo.tracking || 0, -0.08, 0.3);
+  pr.iconos = arr(pr.iconos).slice(0, 8);
+  pr.aplicaciones = Object.assign({ tarjeta: {}, post: {}, letrero: {} }, pr.aplicaciones || {});
+  pr.conexionFramework = arr(pr.conexionFramework);
+  pr.history = arr(pr.history); pr.ediciones = arr(pr.ediciones);
+  pr.feedback = pr.feedback || { estrellas: 0, notas: "" };
+  return pr;
+}
+function autoChecks(pr, other) {
+  const c = Object.fromEntries(pr.colores.map(x => [x.rol, x.hex]));
+  const out = {
+    contraste_oscuro_sobre_claro: +contrast(c.oscuro, c.claro).toFixed(2),
+    contraste_claro_sobre_primario: +contrast(c.claro, c.primario).toFixed(2),
+    contraste_oscuro_sobre_primario: +contrast(c.oscuro, c.primario).toFixed(2),
+    simbolo_valido: !!buildSvg(pr.logo.simbolo_svg),
+    formas_en_simbolo: (buildSvg(pr.logo.simbolo_svg)?.querySelectorAll("path,circle,rect,ellipse,line,polyline,polygon").length) || 0,
+    iconos_validos: pr.iconos.filter(i => buildSvg(i.svg)).length + "/" + pr.iconos.length,
+    tipografias_distintas: pr.tipografia.display.familia !== pr.tipografia.texto.familia
+  };
+  if (other?.tipografia) out.misma_tipografia_que_la_otra = other.tipografia.display.familia === pr.tipografia.display.familia;
+  return out;
+}
+const core = pr => pr && { bigIdea: pr.bigIdea, tagline: pr.tagline, insight: pr.insight, concepto: pr.concepto };
+const compactProp = pr => { const x = clone(pr); delete x.history; delete x.ediciones; delete x.qa; delete x.feedback; x.moodboard && (x.moodboard.imagenes = (x.moodboard.imagenes || []).length + " imágenes subidas"); return x; };
+
+/* ============ Pipeline ============ */
+async function runFactory() {
+  const p = cur(); if (!p || S.running) return;
+  if (p.sample) { toast("El ejemplo es de solo lectura. Crea un briefing nuevo."); return; }
+  p.brief = $("#briefText").value.trim(); p.name = $("#projName").value.trim() || p.name;
+  if (p.brief.length < 40) { toast("Escribe o sube un briefing más completo (al menos un par de párrafos)."); return; }
+  if (!S.sample) { $("#noSample").hidden = false; return; }
+  startRun();
+  try {
+    if (p.fase === "revision" && p.proposals?.length === 2) await phase2(p);
+    else { await phase1(p); if (!$("#pauseChk").checked) await phase2(p); }
+  } catch (e) { if (e?.code !== "cancelled") toast(errCopy(e)); log(p, "Harness", errCopy(e)); }
+  endRun(); render();
+}
+function startRun() { S.running = true; S.ctl = new AbortController(); S.agentState = {}; $("#stopBtn").hidden = false; $("#runBtn").disabled = true; renderHarness(); }
+function endRun() { S.running = false; S.ctl = null; $("#stopBtn").hidden = true; $("#runBtn").disabled = false; }
+
+async function phase1(p) {
+  p.fase = "estrategia"; render();
+  const fw = await agent(p, "manager", TASKS.framework, { briefing: p.brief }, SCHEMA.framework, "complex");
+  p.framework = normFramework(fw); if (!p.nameManual) p.name = p.framework.marca; saveSoon(p); render();
+  const rs = await agent(p, "research", TASKS.research, { framework: p.framework }, SCHEMA.research, "complex");
+  p.research = { exploracion: arr(rs.exploracion), benchmark: arr(rs.benchmark), tensiones: arr(rs.tensiones), territorios: arr(rs.territorios) }; saveSoon(p); render();
+  await ideasStep(p);
+}
+async function ideasStep(p) {
+  const id = await agent(p, "redactor", TASKS.ideas, { framework: p.framework, research: p.research }, SCHEMA.ideas, "complex");
+  p.candidatas = arr(id.candidatas).slice(0, 8);
+  const sel = await agent(p, "manager", TASKS.seleccion, { framework: p.framework, tensiones: p.research?.tensiones, candidatas: p.candidatas }, SCHEMA.seleccion, "complex");
+  p.seleccionPorque = sel.porque || "";
+  p.proposals = arr(sel.propuestas).slice(0, 2).map((x, i) => normProposal({ id: "AB"[i], bigIdea: x.bigIdea, tagline: x.tagline, insight: x.insight, concepto: x.concepto, conexionFramework: x.conexionFramework }));
+  if (p.proposals.length < 2) throw { code: "invalid_json", message: "El Manager no devolvió dos propuestas" };
+  p.fase = "revision"; log(p, "Harness", "Checkpoint humano: revisa el framework y las big ideas, luego continúa."); saveSoon(p); render();
+}
+async function phase2(p) {
+  p.fase = "identidad"; render();
+  const [A, B] = p.proposals;
+  for (const [pr, other] of [[A, null], [B, A]]) {
+    const br = await agent(p, "branding", TASKS.branding, { framework: p.framework, bigIdea: core(pr), otraPropuesta: other ? { bigIdea: other.bigIdea, tipografia: other.tipografia, colores: other.colores, personalidad: other.personalidad } : null }, SCHEMA.branding, "complex");
+    Object.assign(pr, br); pr.branded = true; normProposal(pr); saveSoon(p); render();
+  }
+  await Promise.all(p.proposals.map(async pr => {
+    const ctx = { framework: { marca: p.framework.marca, productos: p.framework.productos, servicios: p.framework.servicios, target: p.framework.target }, bigIdea: core(pr), personalidad: pr.personalidad, tono: pr.tono, tipografia: pr.tipografia, colores: pr.colores };
+    const [ds, ic] = await Promise.all([
+      agent(p, "diseno", TASKS.diseno, ctx, SCHEMA.diseno, "default"),
+      agent(p, "ilustrador", TASKS.iconos, ctx, SCHEMA.iconos, "default")
+    ]);
+    Object.assign(pr, { logo: ds.logo, patron_svg: ds.patron_svg, aplicaciones: ds.aplicaciones, iconos: ic.iconos, estiloIconos: ic.estiloIconos });
+    normProposal(pr); saveSoon(p); render();
+  }));
+  await Promise.all(p.proposals.map((pr, i) => qaStep(p, pr, p.proposals[1 - i])));
+  p.fase = "listo"; S.memory.proyectos = (S.memory.proyectos || 0) + 1; store.saveMemory(S.memory);
+  log(p, "Harness", "Listo. Revisa, ajusta y califica cada propuesta."); saveSoon(p); render();
+}
+async function qaStep(p, pr, other) {
+  const checks = autoChecks(pr, other);
+  const qa = await agent(p, "critico", TASKS.qa, { framework: p.framework, propuesta: compactProp(pr), otraBigIdea: other?.bigIdea, chequeosAutomaticos: checks }, SCHEMA.qa, "default");
+  pr.qa = { ...qa, checks, ronda: 1 };
+  const total = +qa?.puntaje?.total || 10;
+  const map = { branding: ["branding", TASKS.branding, SCHEMA.branding], diseno: ["diseno", TASKS.diseno, SCHEMA.diseno], iconos: ["ilustrador", TASKS.iconos, SCHEMA.iconos] };
+  if (total < 7 && map[qa.revisar]) {
+    const [k, t, s] = map[qa.revisar];
+    log(p, "Harness", `Propuesta ${pr.id}: el crítico pidió revisar ${qa.revisar} (${total}/10). Una sola vuelta.`);
+    const fix = await agent(p, k, t + "\n\nREVISIÓN pedida por el crítico: " + (qa.instruccion || ""), { framework: p.framework, propuestaActual: compactProp(pr) }, s, "complex");
+    if (qa.revisar === "diseno") Object.assign(pr, { logo: fix.logo || pr.logo, patron_svg: fix.patron_svg || pr.patron_svg, aplicaciones: fix.aplicaciones || pr.aplicaciones });
+    else Object.assign(pr, fix);
+    normProposal(pr); pr.qa.revisado = qa.revisar; pr.qa.checksDespues = autoChecks(pr, other);
+  }
+}
+
+/* Prompt-adjust one proposal */
+async function adjust(pr, instr) {
+  const p = cur(); if (!instr.trim()) return;
+  if (!S.sample) { toast(errCopy({ code: "no_sample" })); return; }
+  if (p.sample) { toast("El ejemplo es de solo lectura. Crea un briefing nuevo para ajustar."); return; }
+  const box = $(`#adj-${pr.id}`); const btn = $(`#adjBtn-${pr.id}`); const st = $(`#adjSt-${pr.id}`);
+  btn.disabled = true; st.textContent = "Pensando…"; S.ctl = new AbortController();
+  try {
+    const other = p.proposals.find(x => x !== pr);
+    const out = await agent(p, "branding", TASKS.ajuste + "\n\nPEDIDO DEL DISEÑADOR: " + instr, { framework: p.framework, propuesta: compactProp(pr), otraPropuesta: core(other) }, SCHEMA.ajuste, "complex");
+    const allowed = ["bigIdea","tagline","insight","concepto","conexionFramework","personalidad","arquetipo","tono","moodboard","tipografia","colores","logo","patron_svg","aplicaciones","estiloIconos","iconos"];
+    const ch = out.cambios || {}; const keys = Object.keys(ch).filter(k => allowed.includes(k));
+    if (!keys.length) { st.textContent = "No hubo cambios. Prueba con un pedido más concreto."; return; }
+    snapshot(pr, "Prompt: " + instr);
+    for (const k of keys) { if (k === "moodboard") pr.moodboard = { ...pr.moodboard, ...ch.moodboard, imagenes: pr.moodboard.imagenes }; else if (k === "logo") pr.logo = { ...pr.logo, ...ch.logo }; else pr[k] = ch[k]; }
+    normProposal(pr); pr.prompts = arr(pr.prompts); pr.prompts.push(instr);
+    st.textContent = out.resumen || ("Cambió: " + keys.join(", ")); box.value = "";
+    saveSoon(p); renderProposal(pr);
+  } catch (e) { st.textContent = errCopy(e); }
+  finally { btn.disabled = false; S.ctl = null; }
+}
+function snapshot(pr, label) {
+  const s = compactProp(pr); delete s.prompts;
+  pr.history.unshift({ t: new Date().toLocaleString("es", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "short" }), label, data: s });
+  pr.history = pr.history.slice(0, 15);
+}
+
+/* Learning loop */
+async function learn() {
+  const p = cur(); if (!p?.proposals?.length) return;
+  if (p.sample) { toast("El ejemplo no enseña nada nuevo: corre un briefing real."); return; }
+  if (!S.sample) { toast(errCopy({ code: "no_sample" })); return; }
+  const btn = $("#learnBtn"); btn.disabled = true; $("#learnHint").textContent = "El Manager está destilando lecciones…";
+  try {
+    const señales = p.proposals.map(pr => ({
+      propuesta: pr.id, bigIdea: pr.bigIdea, elegida: p.favorita === pr.id, estrellas: pr.feedback.estrellas, notas: pr.feedback.notas,
+      pedidosPorPrompt: arr(pr.prompts), edicionesManuales: pr.ediciones.slice(-40), qa: pr.qa?.puntaje,
+      final: { tipografia: pr.tipografia, colores: pr.colores.map(c => c.hex + " " + c.rol), personalidad: pr.personalidad }
+    }));
+    const out = await agent(p, "manager", TASKS.aprender, { leccionesActuales: S.memory.lecciones, sector: p.framework?.sector, señales }, SCHEMA.aprender, "complex");
+    const ls = arr(out.lecciones).filter(l => l && l.texto).slice(0, 20).map(l => ({ texto: String(l.texto), tipo: ["preferencia", "evitar", "proceso"].includes(l.tipo) ? l.tipo : "proceso", evidencia: String(l.evidencia || ""), proyecto: p.name }));
+    if (ls.length) { S.memory.lecciones = ls; S.memory.actualizado = new Date().toISOString(); await store.saveMemory(S.memory); }
+    p.aprendido = true; saveSoon(p);
+    $("#learnHint").textContent = `Memoria actualizada: ${ls.length} lecciones.`; renderMemory();
+  } catch (e) { $("#learnHint").textContent = errCopy(e); }
+  finally { btn.disabled = false; }
+}
+
+/* ============ Rendering ============ */
+function render() {
+  const p = cur();
+  // project selector
+  $("#projSel").innerHTML = S.projects.map(x => `<option value="${esc(x.id)}" ${x.id === S.current ? "selected" : ""}>${esc(x.name || "Sin nombre")}${x.sample ? " · ejemplo" : ""}</option>`).join("");
+  const fases = { nuevo: "Sin empezar", estrategia: "Estrategia en curso", revision: "Esperando tu revisión", identidad: "Identidad en curso", listo: "Listo para iterar" };
+  const ph = $("#phasePill"); ph.textContent = fases[p?.fase] || "—"; ph.className = "pill " + (p?.fase === "listo" ? "ok" : p?.fase === "revision" ? "warn" : S.running ? "run" : "");
+  $("#sampleNote").hidden = !p?.sample;
+  $("#sampleNote").textContent = p?.sample ? "Estás viendo un ejemplo armado a partir del framework de tu imagen (target, competidores, stakeholders y ventaja son los tuyos; nombre “Barrio”, visión, misión y propuesta de valor son textos de ejemplo porque no eran legibles). Las propuestas muestran el tipo de salida que producen los agentes. Crea un “+ Nuevo briefing” para correr la fábrica." : "";
+  $("#tabA").textContent = p?.proposals?.[0]?.bigIdea ? "· " + truncate(p.proposals[0].bigIdea, 22) : "";
+  $("#tabB").textContent = p?.proposals?.[1]?.bigIdea ? "· " + truncate(p.proposals[1].bigIdea, 22) : "";
+  $("#tabM").textContent = (S.memory.lecciones || []).length || "";
+  $("#storePill").textContent = store.mode === "db" ? "Guardado en tu cuenta" : "Guardado en este navegador";
+  // briefing
+  if (document.activeElement !== $("#briefText")) $("#briefText").value = p?.brief || "";
+  if (document.activeElement !== $("#projName")) $("#projName").value = p?.name || "";
+  $("#briefText").readOnly = !!p?.sample; $("#projName").readOnly = !!p?.sample;
+  $("#runBtn").textContent = p?.fase === "revision" ? "Continuar a identidad visual" : (p?.proposals?.length ? "Volver a correr desde cero" : "Iniciar la fábrica");
+  $("#runHint").textContent = p?.fase === "revision" ? "Revisa el Framework y las big ideas abajo; edita lo que quieras antes de continuar." : "Toma de 4 a 10 minutos. Puedes navegar mientras trabaja.";
+  renderHarness(); renderLog(); renderReview(); renderFramework(); renderMemory();
+  p?.proposals?.forEach(renderProposal);
+  ["a", "b"].forEach((k, i) => { if (!p?.proposals?.[i]) $("#v-propuesta-" + k).innerHTML = `<div class="empty">Esta propuesta aparece cuando los agentes terminan la fase de estrategia.</div>`; });
+}
+const truncate = (s, n) => (s = String(s || "")).length > n ? s.slice(0, n - 1) + "…" : s;
+
+function renderHarness() {
+  const p = cur(); const done = p?.fase === "listo" && !S.running;
+  const desc = { manager: "framework · selección · aprendizaje", research: "palabras · benchmark · tensiones", redactor: "6 big ideas candidatas", branding: "personalidad · moodboard · tipo · color", diseno: "símbolo · wordmark · patrón", ilustrador: "set de 6 íconos", critico: "rúbrica + chequeos medidos" };
+  $("#harness").innerHTML = AGENT_ORDER.map(k => { const st = S.agentState[k] || { s: done ? "done" : "idle", note: done ? "listo" : desc[k] }; return `<div class="agent" data-s="${st.s}"><b>${esc(AGENTS[k].name)}</b><span>${esc(st.note || desc[k])}</span></div>`; }).join("") +
+    `<div class="agent" data-s="${p?.fase === "revision" ? "work" : "idle"}"><b>Tú (checkpoint)</b><span>${p?.fase === "revision" ? "te toca revisar" : "revisas y decides"}</span></div>`;
+}
+function renderLog() {
+  const p = cur(); const L = p?.log || [];
+  $("#log").innerHTML = L.length ? L.map(l => `<div><span class="t">${esc(l.t)}</span><span class="a">${esc(l.a)}</span><span>${esc(l.m)}</span></div>`).join("") : `<div><span class="t">—</span><span class="a">Harness</span><span>Esperando un briefing.</span></div>`;
+  $("#log").scrollTop = 1e6;
+}
+function renderReview() {
+  const p = cur(); const box = $("#review");
+  if (!p?.candidatas?.length) { box.hidden = true; return; }
+  box.hidden = false;
+  const chosen = new Set((p.proposals || []).map(x => (x.bigIdea || "").toLowerCase()));
+  box.innerHTML = `<div class="row"><h3 class="grow">Big ideas</h3><span class="label">${p.candidatas.length} candidatas · 2 elegidas</span></div>
+    ${p.seleccionPorque ? `<p class="muted" style="margin:0;font-size:12.5px">${esc(p.seleccionPorque)}</p>` : ""}
+    ${(p.proposals || []).map((pr, i) => `<div class="cand-item sel"><span class="label">Propuesta ${"AB"[i]} · editable</span><b contenteditable="${!p.sample}" data-bi="${i}">${esc(pr.bigIdea)}</b><span class="muted">${esc(pr.tagline || "")}</span></div>`).join("")}
+    <details><summary class="muted" style="cursor:pointer;font-size:12.5px">Ver las ${p.candidatas.length} candidatas del redactor</summary><div class="cand" style="margin-top:8px">
+    ${p.candidatas.map(c => `<div class="cand-item ${chosen.has((c.bigIdea || "").toLowerCase()) ? "sel" : ""}"><b>${esc(c.bigIdea)}</b><span>${esc(c.tagline)}</span><span class="muted" style="font-size:12.5px">${esc(c.insight)} · ${esc(c.territorio)}</span></div>`).join("")}</div></details>
+    ${p.fase === "revision" && !p.sample ? `<div class="row"><button class="btn sm" id="regenIdeas">Pedir otras big ideas</button></div>` : ""}`;
+  $$("[data-bi]", box).forEach(el => el.addEventListener("blur", () => { const pr = p.proposals[+el.dataset.bi]; if (pr.bigIdea !== el.textContent.trim()) { pr.bigIdea = el.textContent.trim(); saveSoon(p); render(); } }));
+  $("#regenIdeas")?.addEventListener("click", async () => { if (S.running) return; startRun(); try { await ideasStep(p); } catch (e) { toast(errCopy(e)); } endRun(); render(); });
+}
+
+/* Framework board */
+function ce(path, val, tag = "div", cls = "") { const p = cur(); return `<${tag} class="${cls}" contenteditable="${!p.sample}" data-path="${path}">${esc(val)}</${tag}>`; }
+function ceList(path, list, cls = "") { const p = cur(); return `<ul class="${cls}" contenteditable="${!p.sample}" data-list="${path}">${(list.length ? list : [""]).map(x => `<li>${esc(x)}</li>`).join("")}</ul>`; }
+function renderFramework() {
+  const p = cur(); const fw = p?.framework;
+  if (!fw) { $("#fw").innerHTML = `<section style="grid-column:1/-1"><div class="empty">El Manager llena este framework a partir del briefing.</div></section>`; $("#research").innerHTML = ""; return; }
+  const A = p.proposals || [];
+  $("#fw").innerHTML = `
+  <section><h3>Atributos</h3><span class="label">Sí somos</span><div class="attr">${fw.atributos.son.map((a, i) => `<div title="${esc(a.porque)}"><b ${!p.sample ? 'contenteditable="true"' : ""} data-path="atributos.son.${i}.nombre">${esc(a.nombre)}</b><br><span class="muted" ${!p.sample ? 'contenteditable="true"' : ""} data-path="atributos.son.${i}.porque">${esc(a.porque)}</span></div>`).join("")}</div>
+    <span class="label">No somos</span>${ceList("atributos.noSon", fw.atributos.noSon, "attr-no")}</section>
+  <section><h3>Visión</h3>${ce("vision", fw.vision, "div", "chip")}<div class="orbit">${fw.visionPalabras.map(w => `<span>${esc(w)}</span>`).join("")}</div>
+    <h3>Misión</h3>${ce("mision", fw.mision, "div", "chip")}<div class="orbit">${fw.misionPalabras.map(w => `<span>${esc(w)}</span>`).join("")}</div></section>
+  <section><h3>Productos clave</h3>${ceList("productos", fw.productos)}<h3>Servicios clave</h3>${ceList("servicios", fw.servicios)}</section>
+  <section><h3>Target / Comportamiento</h3>${ceList("target", fw.target)}</section>
+  <section class="big"><span class="lab">BIG IDEA${A.length > 1 ? "S" : ""}</span>${A.length ? A.map((x, i) => `<div><div class="lab">Propuesta ${"AB"[i]}</div><div class="bi">“${esc(x.bigIdea)}”</div></div>`).join("") : `<div class="bi">“BIG IDEA”</div>`}</section>
+  <section><h3>Competidores clave</h3><ul>${fw.competidores.map((c, i) => `<li><b ${!p.sample ? 'contenteditable="true"' : ""} data-path="competidores.${i}.nombre">${esc(c.nombre)}</b> — <span ${!p.sample ? 'contenteditable="true"' : ""} data-path="competidores.${i}.nota">${esc(c.nota)}</span></li>`).join("")}</ul></section>
+  <section><h3>Propuesta de valor</h3><div class="vp">${["que", "como", "resultado"].map((k, i) => `<div><i>${["WHAT", "HOW", "OUTCOME"][i]}</i>${ce("propuestaValor." + k, fw.propuestaValor[k])}</div>`).join("")}</div></section>
+  <section><h3>Stakeholders clave</h3>${ceList("stakeholders", fw.stakeholders)}</section>
+  <section><h3>Ventaja competitiva</h3>${ce("ventaja.nucleo", fw.ventaja.nucleo, "div", "chip")}${ceList("ventaja.puntos", fw.ventaja.puntos)}</section>`;
+  $$("[data-path]", $("#fw")).forEach(el => el.addEventListener("blur", () => setPath(fw, el.dataset.path, el.textContent.trim())));
+  $$("[data-list]", $("#fw")).forEach(el => el.addEventListener("blur", () => setPath(fw, el.dataset.list, $$("li", el).map(li => li.textContent.trim()).filter(Boolean))));
+  const r = p.research;
+  $("#research").innerHTML = (fw.vacios?.length ? `<div class="card"><h3>Vacíos del briefing</h3><p class="muted" style="margin:0;font-size:12.5px">Preguntas para el cliente. El Manager completó estos puntos con supuestos.</p><ul>${fw.vacios.map(v => `<li>${esc(v)}</li>`).join("")}</ul></div>` : "") +
+    (r ? `<div class="card"><h3>Tensiones e insights</h3><ul>${arr(r.tensiones).map(t => `<li>${esc(t)}</li>`).join("")}</ul><h3>Territorios</h3><ul>${arr(r.territorios).map(t => `<li><b>${esc(t.nombre)}</b> — ${esc(t.descripcion)}</li>`).join("")}</ul></div>
+    <div class="card" style="grid-column:1/-1"><h3>Exploración de palabras</h3><div class="tblwrap"><table><tr><th>Palabra</th><th>Significados</th><th>Asociaciones</th><th>Ángulo</th></tr>${arr(r.exploracion).map(x => `<tr><td><b>${esc(x.palabra)}</b></td><td>${esc(x.significados)}</td><td>${esc(x.asociaciones)}</td><td>${esc(x.angulo)}</td></tr>`).join("")}</table></div></div>
+    <div class="card" style="grid-column:1/-1"><h3>Benchmark</h3><p class="muted" style="margin:0;font-size:12.5px">Desde el conocimiento del modelo, sin navegar la web. Lo marcado como hipótesis hay que verificarlo; la versión del repositorio para Claude Code sí puede buscar en internet.</p><div class="tblwrap"><table><tr><th>Marca</th><th>Posicionamiento</th><th>Códigos visuales</th><th>Oportunidad</th><th>Certeza</th></tr>${arr(r.benchmark).map(x => `<tr><td><b>${esc(x.nombre)}</b></td><td>${esc(x.posicionamiento)}</td><td>${esc(x.codigosVisuales)}</td><td>${esc(x.oportunidad)}</td><td><span class="pill ${x.certeza === "conocido" ? "ok" : "warn"}">${esc(x.certeza || "hipotesis")}</span></td></tr>`).join("")}</table></div></div>` : "");
+}
+function setPath(obj, path, val) {
+  const p = cur(); if (p.sample) return;
+  const ks = path.split("."); let o = obj; for (let i = 0; i < ks.length - 1; i++) o = o[ks[i]];
+  if (JSON.stringify(o[ks.at(-1)]) === JSON.stringify(val)) return;
+  o[ks.at(-1)] = val; saveSoon(p);
+}
+
+/* Deck */
+const TEXTURES = {
+  puntos: (a, b) => `background:radial-gradient(${a} 22%,transparent 24%) 0 0/2.2cqw 2.2cqw,${b}`,
+  lineas: (a, b) => `background:repeating-linear-gradient(-45deg,${a} 0 .35cqw,${b} .35cqw 1.4cqw)`,
+  grano: (a, b) => `background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.38'/%3E%3C/svg%3E"),${b}`,
+  reticula: (a, b) => `background:linear-gradient(${a} .12cqw,transparent .12cqw) 0 0/2.6cqw 2.6cqw,linear-gradient(90deg,${a} .12cqw,transparent .12cqw) 0 0/2.6cqw 2.6cqw,${b}`,
+  ondas: (a, b) => `background:repeating-radial-gradient(circle at 0 100%,${a} 0 .4cqw,${b} .4cqw 1.6cqw)`,
+  bloques: (a, b) => `background:conic-gradient(${a} 25%,${b} 0 50%,${a} 0 75%,${b} 0) 0 0/3cqw 3cqw`
+};
+function tex(name, a, b) { return (TEXTURES[name] || TEXTURES.grano)(a, b); }
+function lockup(pr, size = 4, extra = "") {
+  const L = pr.logo; const kind = L.tipo === "wordmark" ? "wordmark" : L.disposicion === "stacked" ? "stacked" : "";
+  return `<span class="lockup ${kind} ${extra}" style="font-size:${size}cqw"><span class="sym">${svgHTML(L.simbolo_svg)}</span><span class="wm" style="font-weight:${+L.peso || 700};letter-spacing:${+L.tracking || 0}em;text-transform:${L.mayusculas ? "uppercase" : "none"}">${esc(L.texto)}</span></span>`;
+}
+function deckVars(pr) {
+  const c = pr.colores, t = pr.tipografia;
+  loadFont(t.display.familia, t.display.peso); loadFont(t.texto.familia, t.texto.peso); loadFont(t.texto.familia, 700); loadFont(t.display.familia, pr.logo?.peso);
+  return `--p1:${c[0].hex};--p2:${c[1].hex};--p3:${c[2].hex};--p4:${c[3].hex};--p5:${c[4].hex};--fd:"${t.display.familia}",var(--ui);--ft:"${t.texto.familia}",var(--ui);--wd:${t.display.peso}`;
+}
+function slides(p, pr, idx) {
+  const L = "AB"[idx], brand = p.framework?.marca || "", c = pr.colores, mb = pr.moodboard, t = pr.tipografia, A = pr.aplicaciones;
+  const n = i => `<span class="no">${L} · ${String(i).padStart(2, "0")}</span>`;
+  const icons = pr.iconos.map(ic => `<div><div>${svgHTML(ic.svg)}</div></div>`);
+  const imgs = mb.imagenes.slice(0, 3);
+  const S_ = [];
+  S_.push(`<div class="slide s-dark"><div class="in" style="justify-content:space-between">
+     <div class="row" style="justify-content:space-between"><span class="kick">Propuesta ${L} · ${esc(brand)}</span><span class="kick">Identidad visual · dirección</span></div>
+     <div><div class="disp" style="font-size:7.4cqw;max-width:80%">${esc(pr.bigIdea)}</div><p style="font-size:1.8cqw;margin-top:2cqw;opacity:.8">${esc(pr.tagline)}</p></div>
+     <div style="color:var(--p5)">${lockup(pr, 2.6)}</div></div>${n(1)}</div>`);
+  S_.push(`<div class="slide"><div class="in"><span class="kick">El concepto</span><div class="grid2" style="margin-top:3cqw">
+     <div class="disp" style="font-size:4.6cqw;color:var(--p1)">${esc(pr.bigIdea)}</div>
+     <div style="display:flex;flex-direction:column;gap:2cqw;font-size:1.55cqw;line-height:1.5"><p>${esc(pr.concepto)}</p><p style="border-left:.3cqw solid var(--p2);padding-left:1.4cqw;opacity:.85"><b>Insight.</b> ${esc(pr.insight)}</p></div></div></div>${n(2)}</div>`);
+  S_.push(`<div class="slide"><div class="in"><span class="kick">Del framework a la idea</span><div class="disp" style="font-size:3.2cqw;margin-top:1.5cqw;max-width:75%">Por qué esta idea responde a la marca</div>
+     <div class="bridge">${pr.conexionFramework.slice(0, 6).map(x => `<div><b>${esc(x.pilar)}</b>${esc(x.como)}</div>`).join("")}</div></div>${n(3)}</div>`);
+  S_.push(`<div class="slide"><div class="in"><span class="kick">Personalidad</span><div class="grid2" style="margin-top:3cqw;grid-template-columns:1.3fr 1fr">
+     <div style="display:flex;flex-direction:column;justify-content:center;gap:2.4cqw">${pr.personalidad.map(a => `<div class="axis"><span>${esc(a.izq)}</span><div class="bar"><span class="dot" style="left:${a.valor}%"></span></div><span class="r">${esc(a.der)}</span></div>`).join("")}</div>
+     <div style="display:flex;flex-direction:column;justify-content:center;gap:2cqw"><div><span class="kick">Arquetipo</span><div class="disp" style="font-size:3.4cqw;color:var(--p1)">${esc(pr.arquetipo)}</div></div><div><span class="kick">Tono de voz</span><p style="font-size:1.6cqw;line-height:1.45">${esc(pr.tono)}</p></div></div></div></div>${n(4)}</div>`);
+  // moodboard collage
+  const tx = arr(mb.texturas);
+  const tiles = [
+    `<div style="grid-column:1/3;grid-row:1/3;background:var(--p1);color:var(--p5);flex-direction:column;justify-content:space-between"><span class="cap">${esc(c[0].nombre)}</span><span class="disp" style="font-size:3.4cqw">${esc(arr(mb.palabras)[0] || "")}</span></div>`,
+    `<div style="grid-column:3/5;grid-row:1/2;${tex(tx[0], c[3].hex + "33", c[4].hex)}"><span class="cap">${esc(tx[0] || "")}</span></div>`,
+    imgs[0] ? `<div style="grid-column:5/7;grid-row:1/3"><img alt="" src="${esc(imgs[0])}"></div>` : `<div style="grid-column:5/7;grid-row:1/3;background:var(--p4);color:var(--p5);flex-direction:column;justify-content:flex-end;gap:.6cqw"><span class="cap">Fotografía</span><span style="font-size:1.25cqw;line-height:1.35">${esc(mb.fotografia)}</span></div>`,
+    `<div style="grid-column:3/4;grid-row:2/4;background:var(--p2);color:var(--p4);align-items:center;justify-content:center"><span class="disp" style="font-size:6cqw">Aa</span></div>`,
+    `<div style="grid-column:4/5;grid-row:2/3;background:var(--p3);color:var(--p4);align-items:flex-end"><span class="cap">${esc(arr(mb.palabras)[1] || "")}</span></div>`,
+    `<div style="grid-column:1/2;grid-row:3/5;${tex(tx[1] || tx[0], c[0].hex, c[4].hex)}"></div>`,
+    `<div style="grid-column:2/3;grid-row:3/5;background:var(--p5);border:.1cqw solid ${c[3].hex}22;align-items:center;justify-content:center;padding:2cqw;color:var(--p4)"><span class="sym" style="width:100%;display:block">${svgHTML(pr.logo.simbolo_svg)}</span></div>`,
+    imgs[1] ? `<div style="grid-column:4/6;grid-row:3/5"><img alt="" src="${esc(imgs[1])}"></div>` : `<div style="grid-column:4/6;grid-row:3/5;background:var(--p4);color:var(--p5);flex-direction:column;justify-content:space-between"><span class="cap">Composición</span><span style="font-size:1.2cqw;line-height:1.35">${esc(mb.composicion)}</span></div>`,
+    `<div style="grid-column:3/4;grid-row:4/5;background:${c[3].hex};color:var(--p2);align-items:flex-end"><span class="cap">${esc(arr(mb.palabras)[2] || "")}</span></div>`,
+    imgs[2] ? `<div style="grid-column:6/7;grid-row:3/5"><img alt="" src="${esc(imgs[2])}"></div>` : `<div style="grid-column:6/7;grid-row:3/5;background:var(--p1);color:var(--p5);flex-direction:column;justify-content:flex-end"><span class="cap">${esc(arr(mb.palabras).slice(3).join(" · "))}</span></div>`,
+  ];
+  S_.push(`<div class="slide"><div class="in"><div class="row" style="justify-content:space-between"><span class="kick">Moodboard · el universo</span><span class="kick">${arr(mb.palabras).map(esc).join(" · ")}</span></div><div class="mb">${tiles.join("")}</div></div>${n(5)}</div>`);
+  S_.push(`<div class="slide"><div class="in" style="justify-content:space-between"><span class="kick">Logotipo</span>
+     <div style="display:grid;place-items:center;flex:1;color:var(--p4)">${lockup(pr, 7.5)}</div>
+     <p style="font-size:1.4cqw;max-width:70%;line-height:1.45">${esc(pr.logo.racional)}</p></div>${n(6)}</div>`);
+  S_.push(`<div class="slide"><div class="in"><span class="kick">Versiones y contraste</span><div class="vers">
+     <div style="background:var(--p1);color:var(--p5)">${lockup(pr, 2.4)}<small>sobre primario</small></div>
+     <div style="background:var(--p4);color:var(--p5)">${lockup(pr, 2.4)}<small>negativo</small></div>
+     <div style="background:var(--p5);color:var(--p4);border:.1cqw solid ${c[3].hex}22">${lockup(pr, 2.4)}<small>positivo</small></div>
+     <div style="background:var(--p2);color:var(--p4)">${lockup(pr, 5, "symbol")}<small>símbolo solo</small></div></div>
+     <div class="row" style="margin-top:2cqw;gap:3cqw;align-items:flex-end;color:var(--p4)"><span class="kick">Reducción</span>${[3.2, 2.2, 1.4, .9].map(s => lockup(pr, s)).join("")}</div></div>${n(7)}</div>`);
+  S_.push(`<div class="slide"><div class="in"><span class="kick">Tipografía</span><div class="grid2" style="margin-top:2.5cqw">
+     <div style="display:flex;flex-direction:column;gap:1cqw"><span class="kick">Display · ${esc(t.display.familia)} ${t.display.peso}</span><div class="disp" style="font-size:9cqw;color:var(--p1)">Aa Ññ</div><div class="disp" style="font-size:2.4cqw">ABCDEFGHIJKLMNÑOPQRSTUVWXYZ 0123456789</div><p style="font-size:1.25cqw;opacity:.8;line-height:1.45">${esc(t.display.porque)}</p></div>
+     <div style="display:flex;flex-direction:column;gap:1cqw"><span class="kick">Texto · ${esc(t.texto.familia)} ${t.texto.peso}</span><p style="font-size:2.2cqw;line-height:1.3;font-weight:${t.texto.peso}">${esc(pr.tagline)}</p><p style="font-size:1.35cqw;line-height:1.55;font-weight:${t.texto.peso}">${esc(pr.concepto)}</p><p style="font-size:1.25cqw;opacity:.8;line-height:1.45">${esc(t.texto.porque)}</p></div></div></div>${n(8)}</div>`);
+  S_.push(`<div class="slide"><div class="in"><span class="kick">Color</span><div class="swatches">${c.map((x, i) => `<div style="flex:${[3, 2, 1.2, 2, 2.4][i]};background:${x.hex};color:${contrast(x.hex, c[3].hex) > contrast(x.hex, c[4].hex) ? c[3].hex : c[4].hex}"><span class="kick">${esc(x.rol)}</span><b>${esc(x.nombre)}</b><code>${esc(x.hex)}</code><span style="opacity:.85;line-height:1.35">${esc(truncate(x.porque, 110))}</span></div>`).join("")}</div>
+     <div class="ratio">${c.map((x, i) => `<span style="flex:${[30, 15, 5, 20, 30][i]};background:${x.hex}"></span>`).join("")}</div>
+     <p style="font-size:1cqw;margin-top:.8cqw;font-family:var(--mono);opacity:.7">Contraste texto oscuro sobre claro ${contrast(c[3].hex, c[4].hex).toFixed(1)}:1 · claro sobre primario ${contrast(c[4].hex, c[0].hex).toFixed(1)}:1 (WCAG AA texto normal ≥ 4.5:1)</p></div>${n(9)}</div>`);
+  S_.push(`<div class="slide"><div class="in"><div class="row" style="justify-content:space-between"><span class="kick">Íconos y patrón</span><span class="kick">${esc(pr.estiloIconos || "")}</span></div>
+     <div class="icons" style="margin-top:2.4cqw">${pr.iconos.slice(0, 6).map(ic => `<div>${svgHTML(ic.svg)}</div>`).join("")}</div>
+     <div class="icons" style="margin-top:-.8cqw">${pr.iconos.slice(0, 6).map(ic => `<small>${esc(ic.nombre)}</small>`).join("")}</div>
+     <div class="pat" style="margin-top:2cqw;background:var(--p5);color:var(--p1)">${Array.from({ length: 20 }, () => svgHTML(pr.patron_svg)).join("")}</div></div>${n(10)}</div>`);
+  S_.push(`<div class="slide" style="background:color-mix(in srgb,var(--p4) 8%,var(--p5))"><div class="in"><span class="kick">Aplicaciones · dirección</span><div class="apps">
+     <div class="mock-card" style="background:var(--p5);color:var(--p4)"><span>${lockup(pr, 1.7)}</span><div><b style="font-family:var(--fd);font-weight:var(--wd);font-size:1.7cqw;display:block">${esc(A.tarjeta?.titular)}</b><span style="font-size:1.05cqw">${esc(A.tarjeta?.texto)}</span></div></div>
+     <div class="mock-post" style="background:var(--p1);color:var(--p5)"><span class="kick">${esc(brand)}</span><div class="disp" style="font-size:3cqw">${esc(A.post?.titular)}</div><span style="font-size:1.1cqw">${esc(A.post?.texto)}</span></div>
+     <div class="mock-sign"><div class="aw"></div><div class="bd"><div style="text-align:center;display:grid;gap:.8cqw;justify-items:center">${lockup(pr, 2.6)}<span style="font-size:1.1cqw;font-family:var(--ft)">${esc(A.letrero?.texto)}</span></div></div></div></div></div>${n(11)}</div>`);
+  S_.push(`<div class="slide s-prim"><div class="in" style="justify-content:center;align-items:flex-start;gap:3cqw"><div style="color:var(--p5)">${lockup(pr, 3.2)}</div><div class="disp" style="font-size:6cqw;max-width:85%">${esc(pr.tagline || pr.bigIdea)}</div><span class="kick">Siguiente paso: iterar con el ojo del diseñador</span></div>${n(12)}</div>`);
+  return S_;
+}
+
+function renderProposal(pr) {
+  const p = cur(); const idx = p.proposals.indexOf(pr); if (idx < 0) return;
+  const host = $("#v-propuesta-" + "ab"[idx]);
+  const scrollY = window.scrollY;
+  const open = new Set($$("details[open]", host).map(d => d.dataset.k));
+  if (!pr.branded && !pr.arquetipo) {
+    host.innerHTML = `<div class="card"><span class="label">Propuesta ${"AB"[idx]}</span><h2>“${esc(pr.bigIdea)}”</h2><p class="muted" style="margin:0">${esc(pr.tagline || "")}</p><p style="margin:0">${esc(pr.concepto || "")}</p><div class="notice">La identidad visual aparece cuando corre la fase 2 (branding, diseño, ilustración y QA). ${p.fase === "revision" ? "Vuelve a la pestaña Briefing y presiona “Continuar a identidad visual”." : ""}</div></div>`;
+    return;
+  }
+  const t = pr.tipografia; const ro = p.sample ? "disabled" : "";
+  const fontOpts = sel => FONTS.map(f => `<option ${f === sel ? "selected" : ""}>${esc(f)}</option>`).join("");
+  const wOpts = sel => [300, 400, 500, 600, 700, 800, 900].map(w => `<option ${w === +sel ? "selected" : ""}>${w}</option>`).join("");
+  const qa = pr.qa;
+  host.innerHTML = `<div class="prop">
+    <div class="deck">
+      <div class="deck-head"><div class="grow" style="min-width:0"><span class="label">Propuesta ${"AB"[idx]} · ${esc(p.framework?.marca || "")}</span><h2>“${esc(pr.bigIdea)}”</h2></div>
+        <button class="btn" data-present>Presentar</button>
+        ${p.sample ? "" : `<label class="row" style="gap:6px;font-size:13px"><input type="radio" name="fav" data-fav ${p.favorita === pr.id ? "checked" : ""}> Mi favorita</label>`}</div>
+      <div class="deck-slides" style="${deckVars(pr)};display:flex;flex-direction:column;gap:18px">${slides(p, pr, idx).join("")}</div>
+    </div>
+    <aside class="panel">
+      <details data-k="color" ${open.size === 0 || open.has("color") ? "open" : ""}><summary>Colores</summary><div class="pbody">
+        ${pr.colores.map((c, i) => `<div class="sw"><input type="color" value="${esc(c.hex)}" data-ci="${i}" aria-label="${esc(c.nombre)}" ${ro}><div class="nm">${esc(c.nombre)}<small>${esc(c.rol)}</small></div><input type="text" value="${esc(c.hex)}" data-ch="${i}" aria-label="Hex ${esc(c.nombre)}" ${ro}></div>`).join("")}
+        <span class="muted" style="font-size:12px">Oscuro sobre claro: ${contrast(pr.colores[3].hex, pr.colores[4].hex).toFixed(1)}:1</span></div></details>
+      <details data-k="type" ${open.has("type") ? "open" : ""}><summary>Tipografía</summary><div class="pbody">
+        <label class="field"><span>Display</span><select data-font="display" ${ro}>${fontOpts(t.display.familia)}</select></label>
+        <label class="field"><span>Peso display</span><select data-weight="display" ${ro}>${wOpts(t.display.peso)}</select></label>
+        <label class="field"><span>Texto</span><select data-font="texto" ${ro}>${fontOpts(t.texto.familia)}</select></label>
+        <span class="muted" style="font-size:12px">Si una familia no tiene el peso elegido, el navegador lo simula.</span></div></details>
+      <details data-k="logo" ${open.has("logo") ? "open" : ""}><summary>Logotipo</summary><div class="pbody">
+        <label class="field"><span>Texto del wordmark</span><input type="text" data-logo="texto" value="${esc(pr.logo.texto)}" ${ro}></label>
+        <label class="field"><span>Tracking (${(+pr.logo.tracking).toFixed(2)} em)</span><input type="range" min="-0.08" max="0.3" step="0.01" value="${+pr.logo.tracking}" data-logo="tracking" ${ro}></label>
+        <label class="field"><span>Peso</span><select data-logo="peso" ${ro}>${wOpts(pr.logo.peso)}</select></label>
+        <div class="row"><label class="row" style="gap:6px"><input type="checkbox" data-logo="mayusculas" ${pr.logo.mayusculas ? "checked" : ""} ${ro}> Mayúsculas</label>
+        <select data-logo="disposicion" ${ro}><option value="horizontal" ${pr.logo.disposicion !== "stacked" ? "selected" : ""}>Horizontal</option><option value="stacked" ${pr.logo.disposicion === "stacked" ? "selected" : ""}>Apilado</option></select></div>
+        <button class="btn sm" data-expsvg>Descargar símbolo (.svg)</button></div></details>
+      <details data-k="mood" ${open.has("mood") ? "open" : ""}><summary>Moodboard y referencias</summary><div class="pbody">
+        ${arr(mb(pr).referencias).map(r => `<div style="font-size:12.5px"><b>${esc(r.descripcion)}</b><div class="chips" style="margin-top:4px">${[["Pinterest", "https://www.pinterest.com/search/pins/?q="], ["Behance", "https://www.behance.net/search/projects?search="], ["Unsplash", "https://unsplash.com/s/photos/"]].map(([n, u]) => `<a class="btn sm" target="_blank" rel="noopener" href="${esc(u + encodeURIComponent(r.busqueda || r.descripcion))}">${n} ↗</a>`).join("")}</div></div>`).join("")}
+        ${p.sample ? "" : `<label class="field"><span>Sube hasta 3 imágenes propias al moodboard</span><input type="file" accept="image/*" data-mbimg multiple></label>${pr.moodboard.imagenes.length ? `<button class="btn sm" data-mbclear>Quitar mis imágenes</button>` : ""}<span class="muted" style="font-size:12px" data-mbst></span>`}
+      </div></details>
+      <details data-k="adj" ${open.has("adj") || open.size === 0 ? "open" : ""}><summary>Ajustar con un prompt</summary><div class="pbody">
+        <textarea id="adj-${pr.id}" rows="3" placeholder="Ej. Hazla más rebelde, cambia el acento por algo menos infantil y que el símbolo funcione a 16 px" ${ro}></textarea>
+        <div class="chips">${["Más rebelde", "Más sobria y premium", "Otra paleta, misma idea", "Simplifica el símbolo", "Íconos más gruesos", "Reescribe la big idea más corta"].map(x => `<button data-chip ${ro}>${x}</button>`).join("")}</div>
+        <div class="row"><button class="btn primary sm" id="adjBtn-${pr.id}" ${ro}>Aplicar ajuste</button><span class="muted" style="font-size:12px" id="adjSt-${pr.id}">${p.sample ? "Disponible en tus propios proyectos." : "Solo cambia esta propuesta."}</span></div></div></details>
+      <details data-k="qa" ${open.has("qa") ? "open" : ""}><summary>Crítico (QA)${qa?.puntaje?.total != null ? ` · ${(+qa.puntaje.total).toFixed(1)}/10` : ""}</summary><div class="pbody qa">
+        ${qa ? `<div class="score">${Object.entries(qa.puntaje || {}).filter(([k]) => k !== "total").map(([k, v]) => `<span class="pill">${esc(k)} ${esc(v)}</span>`).join("")}</div>
+        ${arr(qa.fortalezas).length ? `<b>Fortalezas</b><ul style="margin:0;padding-left:18px">${arr(qa.fortalezas).map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+        <b>Observaciones</b><ul style="margin:0;padding-left:18px">${arr(qa.observaciones).map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+        ${qa.revisado ? `<span class="pill warn">Revisado una vez: ${esc(qa.revisado)}</span>` : ""}
+        <b>Chequeos medidos</b><span class="muted" style="font-family:var(--mono);font-size:11px">${Object.entries(qa.checksDespues || qa.checks || {}).map(([k, v]) => `${esc(k)}: ${esc(v)}`).join(" · ")}</span>` : `<span class="muted">Sin evaluación todavía.</span>`}</div></details>
+      <details data-k="hist" ${open.has("hist") ? "open" : ""}><summary>Historial (${pr.history.length})</summary><div class="pbody hist">
+        ${pr.history.length ? pr.history.map((h, i) => `<div><span>${esc(h.t)} · ${esc(truncate(h.label, 60))}</span><button class="btn sm" data-restore="${i}" ${ro}>Restaurar</button></div>`).join("") : `<span class="muted">Cada ajuste guarda la versión anterior aquí.</span>`}</div></details>
+      ${p.sample ? "" : `<details data-k="fb" ${open.has("fb") ? "open" : ""}><summary>Tu calificación</summary><div class="pbody">
+        <div class="stars">${[1, 2, 3, 4, 5].map(s => `<button data-star="${s}" aria-pressed="${pr.feedback.estrellas === s}">${s}</button>`).join("")}</div>
+        <textarea rows="3" data-notes placeholder="Qué funciona, qué no, qué haría distinto un buen director de arte">${esc(pr.feedback.notas)}</textarea>
+        <span class="muted" style="font-size:12px">El Manager usa esto al “Aprender de este proyecto” (pestaña Memoria).</span></div></details>`}
+    </aside></div>`;
+  wireProposal(host, pr);
+  window.scrollTo(0, scrollY);
+}
+const mb = pr => pr.moodboard || {};
+
+function liveRestyle(host, pr) { const d = $(".deck-slides", host); d.setAttribute("style", deckVars(pr) + ";display:flex;flex-direction:column;gap:18px"); }
+let rerenderT = null;
+function rerenderSoon(pr) { clearTimeout(rerenderT); rerenderT = setTimeout(() => renderProposal(pr), 250); }
+function recordEdit(pr, campo, de, a) { if (String(de) === String(a)) return; const last = pr.ediciones.at(-1); if (last && last.campo === campo) { last.a = a; } else pr.ediciones.push({ campo, de, a }); pr.ediciones = pr.ediciones.slice(-60); }
+
+function wireProposal(host, pr) {
+  const p = cur();
+  const commit = () => saveSoon(p);
+  $$("[data-ci]", host).forEach(inp => inp.addEventListener("input", () => {
+    const c = pr.colores[+inp.dataset.ci]; recordEdit(pr, "color " + c.rol, c.hex, inp.value.toUpperCase()); c.hex = inp.value.toUpperCase();
+    $(`[data-ch="${inp.dataset.ci}"]`, host).value = c.hex; liveRestyle(host, pr); commit();
+  }));
+  $$("[data-ci]", host).forEach(inp => inp.addEventListener("change", () => rerenderSoon(pr)));
+  $$("[data-ch]", host).forEach(inp => inp.addEventListener("change", () => {
+    let v = inp.value.trim(); if (!v.startsWith("#")) v = "#" + v; if (!hexOk(v)) { inp.value = pr.colores[+inp.dataset.ch].hex; return; }
+    const c = pr.colores[+inp.dataset.ch]; recordEdit(pr, "color " + c.rol, c.hex, v.toUpperCase()); c.hex = v.toUpperCase(); commit(); renderProposal(pr);
+  }));
+  $$("[data-font]", host).forEach(s => s.addEventListener("change", () => { const k = s.dataset.font; recordEdit(pr, "tipografía " + k, pr.tipografia[k].familia, s.value); pr.tipografia[k].familia = s.value; commit(); renderProposal(pr); }));
+  $$("[data-weight]", host).forEach(s => s.addEventListener("change", () => { const k = s.dataset.weight; recordEdit(pr, "peso " + k, pr.tipografia[k].peso, +s.value); pr.tipografia[k].peso = +s.value; commit(); renderProposal(pr); }));
+  $$("[data-logo]", host).forEach(el => el.addEventListener(el.type === "range" || el.type === "text" ? "input" : "change", () => {
+    const k = el.dataset.logo; const v = el.type === "checkbox" ? el.checked : el.type === "range" || k === "peso" ? +el.value : el.value;
+    recordEdit(pr, "logo " + k, pr.logo[k], v); pr.logo[k] = v; commit();
+    if (el.type === "range" || el.type === "text") { $$(".deck-slides .wm", host).forEach(w => { if (k === "texto") w.textContent = v; else w.style.letterSpacing = v + "em"; }); el.closest("label").querySelector("span").textContent = k === "tracking" ? `Tracking (${v.toFixed(2)} em)` : "Texto del wordmark"; }
+    else renderProposal(pr);
+  }));
+  $$("[data-chip]", host).forEach(b => b.addEventListener("click", () => { const ta = $(`#adj-${pr.id}`); ta.value = (ta.value ? ta.value + ". " : "") + b.textContent; ta.focus(); }));
+  $(`#adjBtn-${pr.id}`, host)?.addEventListener("click", () => adjust(pr, $(`#adj-${pr.id}`).value));
+  $$("[data-restore]", host).forEach(b => b.addEventListener("click", () => {
+    const h = pr.history[+b.dataset.restore]; if (!h) return; snapshot(pr, "Antes de restaurar"); const keep = { history: pr.history, ediciones: pr.ediciones, feedback: pr.feedback, qa: pr.qa, prompts: pr.prompts, imagenes: pr.moodboard.imagenes };
+    Object.assign(pr, clone(h.data)); pr.history = keep.history; pr.ediciones = keep.ediciones; pr.feedback = keep.feedback; pr.qa = keep.qa; pr.prompts = keep.prompts; normProposal(pr); pr.moodboard.imagenes = keep.imagenes; pr.ediciones.push({ campo: "restauró versión", de: "", a: h.label }); commit(); renderProposal(pr); toast("Versión restaurada");
+  }));
+  $$("[data-star]", host).forEach(b => b.addEventListener("click", () => { pr.feedback.estrellas = +b.dataset.star; commit(); $$("[data-star]", host).forEach(x => x.setAttribute("aria-pressed", x === b)); renderMemory(); }));
+  $("[data-notes]", host)?.addEventListener("change", e => { pr.feedback.notas = e.target.value; commit(); renderMemory(); });
+  $("[data-fav]", host)?.addEventListener("change", () => { p.favorita = pr.id; commit(); renderMemory(); });
+  $("[data-present]", host).addEventListener("click", () => present(host, pr));
+  $("[data-expsvg]", host).addEventListener("click", () => exportSymbol(pr));
+  const fi = $("[data-mbimg]", host);
+  fi?.addEventListener("change", async () => {
+    const st = $("[data-mbst]", host); const files = [...fi.files].slice(0, 3);
+    const assets = window.claude?.use ? await claude.use("assets").catch(() => null) : null;
+    if (!assets) { st.textContent = "Subir imágenes requiere abrir la página en claude.ai siendo su dueño."; return; }
+    st.textContent = "Subiendo…";
+    try { for (const f of files) { const r = await assets.upload(f); pr.moodboard.imagenes.unshift(r.url); } pr.moodboard.imagenes = pr.moodboard.imagenes.slice(0, 3); commit(); renderProposal(pr); }
+    catch (e) { st.textContent = "No se pudo subir: " + (e.code || e.message); }
+  });
+  $("[data-mbclear]", host)?.addEventListener("click", () => { pr.moodboard.imagenes = []; commit(); renderProposal(pr); });
+}
+
+/* Present mode */
+function present(host, pr) {
+  const list = $$(".deck-slides .slide", host); let i = 0;
+  const ov = document.createElement("div"); ov.className = "present"; ov.tabIndex = -1;
+  ov.innerHTML = `<div class="stage" style="${deckVars(pr)}"></div><div class="bar"><button data-p>←</button><button data-c></button><button data-n>→</button><button data-x>Salir</button></div>`;
+  const show = () => { $(".stage", ov).innerHTML = list[i].outerHTML; $("[data-c]", ov).textContent = `${i + 1} / ${list.length}`; };
+  const go = d => { i = clamp(i + d, 0, list.length - 1); show(); };
+  const close = () => { document.removeEventListener("keydown", key); ov.remove(); document.fullscreenElement && document.exitFullscreen().catch(() => { }); };
+  const key = e => { if (e.key === "ArrowRight" || e.key === " ") go(1); else if (e.key === "ArrowLeft") go(-1); else if (e.key === "Escape") close(); };
+  ov.addEventListener("click", e => { if (e.target.closest("[data-p]")) go(-1); else if (e.target.closest("[data-n]")) go(1); else if (e.target.closest("[data-x]")) close(); else if (e.target.closest(".stage")) go(1); });
+  document.addEventListener("keydown", key); document.body.append(ov); show(); ov.focus();
+  ov.requestFullscreen?.().catch(() => { });
+}
+
+/* Memory view */
+function renderMemory() {
+  const L = S.memory.lecciones || []; const p = cur();
+  $("#memCount").textContent = `${L.length} lecciones · ${S.memory.proyectos || 0} proyectos`;
+  $("#lessons").innerHTML = L.length ? L.map((l, i) => `<div class="lesson"><span class="k">${esc(l.tipo)}</span><div><p>${esc(l.texto)}</p>${l.evidencia ? `<small>${esc(l.evidencia)}${l.proyecto ? " · " + esc(l.proyecto) : ""}</small>` : ""}</div><button class="btn sm ghost" data-del="${i}" aria-label="Borrar lección">Borrar</button></div>`).join("")
+    : `<div class="empty">Todavía no hay lecciones. Corre un briefing, ajusta y califica las propuestas, y luego presiona “Aprender de este proyecto”.</div>`;
+  $$("[data-del]").forEach(b => b.onclick = () => { S.memory.lecciones.splice(+b.dataset.del, 1); store.saveMemory(S.memory); renderMemory(); $("#tabM").textContent = S.memory.lecciones.length || ""; });
+  const prs = p?.proposals || [];
+  $("#roundSummary").innerHTML = prs.length ? prs.map(pr => `<div class="row" style="justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:6px"><span><b>${pr.id}</b> · ${esc(truncate(pr.bigIdea, 34))}</span><span class="row" style="gap:6px"><span class="pill">${pr.feedback?.estrellas ? pr.feedback.estrellas + "/5" : "sin calificar"}</span><span class="pill">${arr(pr.ediciones).length} ediciones</span><span class="pill">${arr(pr.prompts).length} prompts</span>${p.favorita === pr.id ? `<span class="pill ok">favorita</span>` : ""}</span></div>`).join("") + (p.aprendido ? `<span class="pill ok">Ya aprendiste de este proyecto; puedes volver a hacerlo tras más cambios.</span>` : "")
+    : `<span class="muted">Este proyecto aún no tiene propuestas.</span>`;
+  $("#learnBtn").disabled = !prs.length || !!p?.sample;
+}
+
+/* Exports */
+async function dl(filename, data) {
+  const d = window.claude?.use ? await claude.use("downloads").catch(() => null) : null;
+  if (!d) { toast("Descargar requiere abrir la página en claude.ai o en la app de Claude."); return; }
+  try { await d.save({ filename, data }); } catch (e) { if (e.code !== "cancelled" && e.code !== "declined") toast("No se descargó: " + (e.code || e.message)); }
+}
+function exportSymbol(pr) {
+  const el = buildSvg(pr.logo.simbolo_svg); if (!el) { toast("Esta propuesta no tiene un símbolo válido."); return; }
+  const map = { c1: 0, c2: 1, c3: 2, c4: 3, c5: 4 };
+  el.querySelectorAll("[class]").forEach(n => { const k = n.getAttribute("class").split(" ")[0]; n.setAttribute("fill", pr.colores[map[k]].hex); n.removeAttribute("class"); });
+  el.setAttribute("xmlns", NS); el.removeAttribute("aria-hidden");
+  dl(`simbolo-${slug(cur().name)}-${pr.id}.svg`, el.outerHTML.replace(/currentColor/g, pr.colores[3].hex));
+}
+const slug = s => String(s || "marca").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+/* ============ Sample project (built from the framework image) ============ */
+function sampleProject() {
+  return {
+    id: "ejemplo", sample: true, name: "Barrio", fase: "listo", favorita: "A",
+    brief: "Ejemplo armado a partir del framework de la imagen adjunta.\n\nTarget: profesionales, obreros y familias en pobreza extrema, con interés en emprender y que buscan precios más accesibles.\nCompetidores clave: Wow, Favo, Puesto.\nStakeholders: distribuidores nacionales e internacionales, entidades financieras, asociaciones de vecinos, comercios y bodegas, emprendedores.\nVentaja competitiva: modelo de negocios innovador, trabajamos para la gente, creamos una relación de confianza, oportunidades financieras.\nServicios: programa social y programa financiero.",
+    log: [{ t: "—", a: "Harness", m: "Proyecto de ejemplo: no se llamó a ningún agente para crearlo." }],
+    framework: normFramework({
+      marca: "Barrio", sector: "Comercio de cercanía y oportunidades financieras para familias emprendedoras (hipótesis a partir del framework)",
+      atributos: { son: [{ nombre: "Amigos", porque: "Estamos cerca, hablamos de tú a tú" }, { nombre: "Comprometidos", porque: "Cumplimos lo que prometemos" }, { nombre: "Sociales", porque: "Generamos oportunidades para el barrio" }, { nombre: "Integradores", porque: "Nadie se queda fuera" }, { nombre: "Modernos", porque: "Tecnología simple al servicio de la gente" }], noSon: ["Lejanos, apáticos", "Desordenados, desinteresados", "Interesados, egoístas", "Excluyentes", "Anticuados"] },
+      vision: "(ejemplo) Ser la red que hace progresar a los barrios emprendedores.", visionPalabras: ["Crowd", "Develop", "Outcome", "Level-up", "Recognition", "Influence"],
+      mision: "(ejemplo) Acercar precios justos, crédito y comunidad a quien quiere salir adelante.", misionPalabras: ["Creative", "Resource", "Impact", "Empowerment", "Value", "Spreading"],
+      productos: ["(no legible en la imagen)"], servicios: ["Programa social", "Programa financiero"],
+      target: ["Profesionales, obreros, pobreza extrema", "Interés en emprender", "Buscan precios más accesibles"],
+      competidores: [{ nombre: "Wow", nota: "" }, { nombre: "Favo", nota: "" }, { nombre: "Puesto", nota: "" }],
+      propuestaValor: { que: "(ejemplo) Productos de primera necesidad a precio justo", como: "(ejemplo) Compras en comunidad y red de bodegas aliadas", resultado: "(ejemplo) Más ahorro y oportunidades para emprender" },
+      stakeholders: ["Distribuidores nacionales e internacionales", "Entidades financieras", "Asociaciones de vecinos", "Comercios y bodegas", "Emprendedores"],
+      ventaja: { nucleo: "Un modelo que trabaja para la gente", puntos: ["Modelo de negocios innovador", "Trabajamos para la gente", "Creamos una relación de confianza", "Oportunidades financieras"] },
+      keywords: ["barrio", "confianza", "comunidad", "progreso", "ahorro", "emprender"], vacios: ["¿Cuál es el nombre real de la marca?", "¿Qué productos concretos vende?", "¿En qué país y ciudades opera?"]
+    }),
+    candidatas: [
+      { bigIdea: "Lo que juntamos, rinde más", tagline: "Juntos compramos mejor.", insight: "Solo, el precio me gana; en grupo, le gano yo.", territorio: "Comunidad" },
+      { bigIdea: "El barrio sube", tagline: "Cada compra es un paso arriba.", insight: "Quiero progresar sin dejar de ser de aquí.", territorio: "Progreso con orgullo" },
+      { bigIdea: "Precio de vecino", tagline: "Lo justo, de confianza.", insight: "Desconfío de las ofertas que parecen trampa.", territorio: "Confianza" }
+    ],
+    seleccionPorque: "Ejemplo: A habla de comunidad y calidez (universo redondo, verde y naranja); B habla de progreso y orgullo popular (universo gráfico, fluorescente, de cartel). Llevan a mundos visuales opuestos.",
+    proposals: [normProposal({
+      id: "A", bigIdea: "Lo que juntamos, rinde más", tagline: "Juntos compramos mejor.",
+      insight: "Solo, el precio me gana; en grupo, le gano yo.",
+      concepto: "Barrio convierte la compra en un acto colectivo. Cuando los vecinos se juntan, el kilo cuesta menos, la bodega vende más y el dinero se queda en casa. La marca se ve como una mesa compartida: formas que se tocan, colores de mercado y una voz que siempre dice “nosotros”.",
+      conexionFramework: [{ pilar: "Atributos: Amigos, Sociales", como: "Tono en primera persona plural y formas que se superponen como personas reunidas." }, { pilar: "Target: buscan precios accesibles", como: "La idea promete ahorro, pero desde el poder del grupo, no desde la carencia." }, { pilar: "Ventaja: relación de confianza", como: "El símbolo es literal: tres círculos que solo existen completos al tocarse." }, { pilar: "Stakeholders: asociaciones de vecinos", como: "La compra comunitaria las vuelve aliadas naturales de la marca." }],
+      personalidad: [{ valor: 40 }, { valor: 25 }, { valor: 15 }, { valor: 35 }, { valor: 10 }], arquetipo: "El Amigo", tono: "Cercano, claro y optimista. Habla de “nosotros”, usa verbos de acción y nunca la palabra “barato”.",
+      moodboard: { palabras: ["mesa compartida", "bolsa llena", "vecindad", "ronda", "tarde cálida"], texturas: ["puntos", "grano"], fotografia: "Retrato documental cálido, luz de tarde, personas reales en sus bodegas y casas; encuadres que siempre incluyen a más de una persona.", composicion: "Formas redondas que se tocan, mucho aire y jerarquía clara.", referencias: [{ descripcion: "Fotografía documental de mercados de barrio en Latinoamérica", busqueda: "fotografía documental mercado barrio latinoamérica" }, { descripcion: "Identidades de cooperativas con formas circulares", busqueda: "cooperative brand identity circles" }, { descripcion: "Ilustración plana de comunidad con paleta cálida", busqueda: "community flat illustration warm palette" }] },
+      tipografia: { display: { familia: "Bricolage Grotesque", peso: 800, porque: "Grotesca con carácter y contraste óptico: cercana sin ser infantil." }, texto: { familia: "Figtree", peso: 400, porque: "Geométrica amable y muy legible en pantallas pequeñas." } },
+      colores: [{ nombre: "Verde confianza", hex: "#14594A", porque: "Estabilidad y dinero que crece, sin la frialdad del azul bancario." }, { nombre: "Naranja mercado", hex: "#FF8A3D", porque: "El color de los toldos y las frutas: energía de compra." }, { nombre: "Lila comunidad", hex: "#B9A7FF", porque: "Toque fresco y moderno que hereda el lila del framework." }, { nombre: "Tinta", hex: "#17162B", porque: "Texto con máximo contraste." }, { nombre: "Papel", hex: "#FBFAFF", porque: "Fondo limpio que deja respirar." }],
+      logo: { tipo: "combinado", texto: "barrio", mayusculas: false, tracking: -0.02, peso: 800, disposicion: "horizontal", simbolo_svg: "<svg viewBox='0 0 100 100'><circle class='c1' cx='34' cy='38' r='24'/><circle class='c2' cx='66' cy='38' r='24' opacity='0.92'/><circle class='c3' cx='50' cy='66' r='24' opacity='0.92'/></svg>", racional: "Tres círculos —tres vecinos— que forman algo más grande al superponerse. La zona compartida es donde ocurre el ahorro." },
+      patron_svg: "<svg viewBox='0 0 40 40'><circle class='c1' cx='10' cy='10' r='6'/><circle class='c2' cx='30' cy='30' r='6'/><circle class='c3' cx='30' cy='10' r='3'/></svg>",
+      estiloIconos: "Trazo redondeado de 2 px, esquinas suaves, geometría simple",
+      iconos: [
+        { nombre: "Compra", svg: "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 8h14l-1 12H6L5 8z'/><path d='M9 8V6a3 3 0 0 1 6 0v2'/></svg>" },
+        { nombre: "Bodega", svg: "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 11l9-7 9 7'/><path d='M5 10v10h14V10'/><path d='M10 20v-6h4v6'/></svg>" },
+        { nombre: "Ahorro", svg: "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='9' r='6'/><path d='M15.5 9.5a6 6 0 1 1-6 6'/></svg>" },
+        { nombre: "Comunidad", svg: "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='8' r='3'/><circle cx='17' cy='9' r='2.5'/><path d='M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6'/><path d='M15 14.5c3 0 6 2 6 5.5'/></svg>" },
+        { nombre: "Reparto", svg: "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 7h11v9H2z'/><path d='M13 10h4l3 3v3h-7'/><circle cx='6' cy='18' r='2'/><circle cx='17' cy='18' r='2'/></svg>" },
+        { nombre: "Confianza", svg: "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z'/></svg>" }],
+      aplicaciones: { tarjeta: { titular: "Hola, vecina.", texto: "Tu bodega, más fuerte en comunidad." }, post: { titular: "Juntos, el kilo cuesta menos.", texto: "Únete a la compra del sábado." }, letrero: { titular: "barrio", texto: "Bodega aliada" } },
+      qa: { puntaje: { coherencia: 8, originalidad: 6, diferenciacion: 8, ejecucion: 8, total: 7.5 }, fortalezas: ["El símbolo explica la idea sin palabras"], observaciones: ["Los círculos superpuestos son un recurso frecuente en marcas de comunidad: buscar un gesto más propio (la bolsa, la mesa).", "El lila tiene poco contraste con el papel: úsalo solo como fondo o acento."], checks: {} },
+      feedback: { estrellas: 0, notas: "" }
+    }), normProposal({
+      id: "B", bigIdea: "El barrio sube", tagline: "Cada compra es un paso arriba.",
+      insight: "Quiero progresar sin dejar de ser de aquí.",
+      concepto: "Barrio celebra al emprendedor que progresa con orgullo de origen. Toma prestada la energía de la gráfica popular —carteles fluorescentes, rotulación de bodegas, tipografía de letrero— y la ordena con una retícula moderna. Cada compra, cada crédito y cada venta es un escalón visible.",
+      conexionFramework: [{ pilar: "Visión: Level-up, Develop", como: "El escalón es el gesto central: progreso que se ve." }, { pilar: "Target: interés en emprender", como: "Le habla al emprendedor como protagonista, no como beneficiario." }, { pilar: "Ventaja: oportunidades financieras", como: "El crédito se comunica como el siguiente escalón, no como deuda." }, { pilar: "Atributos: Modernos, Integradores", como: "Códigos populares reconocibles, ordenados con lenguaje contemporáneo." }],
+      personalidad: [{ valor: 20 }, { valor: 45 }, { valor: 20 }, { valor: 15 }, { valor: 5 }], arquetipo: "El Héroe popular", tono: "Enérgico, orgulloso y directo. Frases cortas en presente; celebra logros concretos.",
+      moodboard: { palabras: ["fluorescente", "letrero", "escalón", "orgullo", "ritmo"], texturas: ["bloques", "lineas"], fotografia: "Flash directo, color saturado, retratos de emprendedores mirando a cámara con orgullo frente a su negocio.", composicion: "Bloques de color planos, titulares enormes y diagonales ascendentes.", referencias: [{ descripcion: "Carteles chicha de Lima: gráfica popular con colores fluorescentes", busqueda: "cartel chicha Lima" }, { descripcion: "Rotulación a mano de bodegas y fachadas", busqueda: "rotulación popular fachadas bodega" }, { descripcion: "Tipografía inspirada en letreros urbanos verticales", busqueda: "Bungee typeface signage" }] },
+      tipografia: { display: { familia: "Bungee", peso: 400, porque: "Nació de la señalética urbana: tiene la voz del letrero de barrio." }, texto: { familia: "Work Sans", peso: 400, porque: "Neutra y robusta, equilibra la intensidad del display." } },
+      colores: [{ nombre: "Rosa chicha", hex: "#FF2E88", porque: "El color más reconocible de la gráfica popular fluorescente." }, { nombre: "Amarillo letrero", hex: "#FFE14D", porque: "Llamado de atención, energía de oferta." }, { nombre: "Azul eléctrico", hex: "#2340FF", porque: "Modernidad y confianza en clave popular." }, { nombre: "Negro", hex: "#121212", porque: "Estructura y contraste." }, { nombre: "Blanco", hex: "#FFFFFF", porque: "Respiro entre bloques intensos." }],
+      logo: { tipo: "combinado", texto: "barrio", mayusculas: true, tracking: 0.04, peso: 400, disposicion: "horizontal", simbolo_svg: "<svg viewBox='0 0 100 100'><polygon class='c1' points='10,90 10,70 30,70 30,50 50,50 50,30 70,30 70,10 90,10 90,90'/><rect class='c2' x='74' y='74' width='16' height='16'/></svg>", racional: "Una escalera que también es la silueta de una calle de casas que crecen. El cuadrado amarillo es la ventana encendida: alguien está trabajando." },
+      patron_svg: "<svg viewBox='0 0 40 40'><polygon class='c1' points='0,40 0,30 10,30 10,20 20,20 20,30 30,30 30,40'/><rect class='c3' x='28' y='4' width='8' height='8'/></svg>",
+      estiloIconos: "Trazo de 2.5 px con terminaciones rectas y esquinas en ángulo",
+      iconos: [
+        { nombre: "Compra", svg: "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='square' stroke-linejoin='miter'><path d='M4 8h16v13H4z'/><path d='M8 8V4h8v4'/></svg>" },
+        { nombre: "Bodega", svg: "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='square' stroke-linejoin='miter'><path d='M3 10h18'/><path d='M4 10l2-6h12l2 6'/><path d='M5 10v11h14V10'/><path d='M10 21v-6h4v6'/></svg>" },
+        { nombre: "Ahorro", svg: "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='square' stroke-linejoin='miter'><path d='M4 5h12v4H4z'/><path d='M8 10h12v4H8z'/><path d='M4 15h12v4H4z'/></svg>" },
+        { nombre: "Socios", svg: "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='square' stroke-linejoin='miter'><path d='M5 4h5v5H5z'/><path d='M14 4h5v5h-5z'/><path d='M3 20v-7h9v7'/><path d='M12 20v-7h9v7'/></svg>" },
+        { nombre: "Progreso", svg: "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='square' stroke-linejoin='miter'><path d='M3 21h6v-6h6V9h6V3'/></svg>" },
+        { nombre: "Crédito", svg: "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='square' stroke-linejoin='miter'><path d='M13 2L4 14h7l-1 8 9-12h-7z'/></svg>" }],
+      aplicaciones: { tarjeta: { titular: "Emprendedora en ascenso", texto: "Bodega aliada desde 2026." }, post: { titular: "¡Subiste un escalón!", texto: "Tu crédito Barrio ya está activo." }, letrero: { titular: "BARRIO", texto: "Aquí el barrio sube" } },
+      qa: { puntaje: { coherencia: 8, originalidad: 8, diferenciacion: 9, ejecucion: 6, total: 7.8 }, fortalezas: ["Código cultural real y reconocible por el público"], observaciones: ["El rosa sobre blanco no alcanza 4.5:1 para texto: úsalo en bloques, no en texto pequeño.", "Riesgo de caricatura: mantener la gráfica popular en titulares y dejar la interfaz sobria."], checks: {} },
+      feedback: { estrellas: 0, notas: "" }
+    })],
+    research: {
+      tensiones: ["Quieren precios bajos, pero desconfían de lo barato.", "Quieren progresar, pero sin sentir que dejan atrás a su barrio.", "Necesitan crédito, pero temen a los bancos."],
+      territorios: [{ nombre: "Comunidad", descripcion: "El grupo como fuerza económica." }, { nombre: "Progreso con orgullo", descripcion: "El emprendedor como héroe local." }, { nombre: "Confianza", descripcion: "La marca como vecino que no falla." }],
+      exploracion: [{ palabra: "barrio", significados: "Cada una de las partes en que se divide un pueblo o ciudad (RAE).", asociaciones: "Identidad, pertenencia, vecindad, bodega de la esquina.", angulo: "Nombre e identidad compartida." }],
+      benchmark: [{ nombre: "Wow", posicionamiento: "Por verificar", codigosVisuales: "Por verificar", oportunidad: "Por verificar", certeza: "hipotesis" }, { nombre: "Favo", posicionamiento: "Por verificar", codigosVisuales: "Por verificar", oportunidad: "Por verificar", certeza: "hipotesis" }, { nombre: "Puesto", posicionamiento: "Por verificar", codigosVisuales: "Por verificar", oportunidad: "Por verificar", certeza: "hipotesis" }]
+    }
+  };
+}
+
+/* ============ Boot & wiring ============ */
+function setView(v) {
+  if (!["briefing", "framework", "propuesta-a", "propuesta-b", "memoria"].includes(v)) v = "briefing";
+  S.view = v; $$(".view").forEach(s => s.hidden = s.id !== "v-" + v);
+  $$(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.v === v));
+  if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
+}
+$("#tabs").addEventListener("click", e => { const t = e.target.closest(".tab"); if (t) setView(t.dataset.v); });
+window.addEventListener("hashchange", () => setView(location.hash.slice(1)));
+$("#projSel").addEventListener("change", e => { S.current = e.target.value; S.agentState = {}; try { localStorage.setItem("fabrica.current", S.current); } catch { } render(); });
+$("#newProj").addEventListener("click", () => {
+  if (S.running) { toast("Espera a que termine la fábrica o detenla."); return; }
+  const p = { id: uid(), name: "Nuevo briefing", fase: "nuevo", brief: "", log: [], createdAt: new Date().toISOString() };
+  S.projects.unshift(p); S.current = p.id; S.agentState = {}; store.saveProject(p); render(); setView("briefing"); $("#briefText").focus();
+});
+$("#briefText").addEventListener("input", () => { const p = cur(); if (p && !p.sample) { p.brief = $("#briefText").value; saveSoon(p); } });
+$("#projName").addEventListener("input", () => { const p = cur(); if (p && !p.sample) { p.name = $("#projName").value; p.nameManual = true; saveSoon(p); } });
+$("#projName").addEventListener("change", render);
+$("#briefFile").addEventListener("change", e => {
+  const f = e.target.files[0]; if (!f) return; const p = cur();
+  if (p?.sample) { toast("Crea un “+ Nuevo briefing” primero."); return; }
+  const r = new FileReader(); r.onload = () => { $("#briefText").value = String(r.result).slice(0, 40000); p.brief = $("#briefText").value; if (!p.nameManual) { p.name = f.name.replace(/\.[^.]+$/, ""); } saveSoon(p); render(); }; r.readAsText(f);
+});
+$("#runBtn").addEventListener("click", () => {
+  const p = cur();
+  if (p?.proposals?.length && p.fase !== "revision") { snapshotProject(p); p.proposals = []; p.candidatas = []; p.fase = "nuevo"; }
+  runFactory();
+});
+function snapshotProject(p) { /* keep last run's proposals for reference in the log */ log(p, "Harness", "Nueva corrida: las propuestas anteriores se reemplazan."); }
+$("#stopBtn").addEventListener("click", () => S.ctl?.abort());
+$("#addLesson").addEventListener("click", () => { const v = $("#newLesson").value.trim(); if (!v) return; S.memory.lecciones = S.memory.lecciones || []; S.memory.lecciones.unshift({ texto: v, tipo: "preferencia", evidencia: "escrita por ti" }); $("#newLesson").value = ""; store.saveMemory(S.memory); renderMemory(); $("#tabM").textContent = S.memory.lecciones.length; });
+$("#learnBtn").addEventListener("click", learn);
+$("#expJson").addEventListener("click", () => { const p = cur(); if (p) dl(`proyecto-${slug(p.name)}.json`, JSON.stringify(p, null, 2)); });
+$("#impJson").addEventListener("change", e => {
+  const f = e.target.files[0]; if (!f) return; const r = new FileReader();
+  r.onload = () => {
+    try {
+      const p = JSON.parse(String(r.result)); if (!p || typeof p !== "object" || !(p.framework || p.proposals)) throw 0;
+      p.id = uid(); delete p.sample; p.name = String(p.name || p.framework?.marca || f.name.replace(/\.[^.]+$/, "")); p.createdAt = new Date().toISOString();
+      if (p.framework) p.framework = normFramework(p.framework);
+      p.proposals = arr(p.proposals).slice(0, 2).map((x, i) => normProposal({ ...x, id: "AB"[i], branded: true }));
+      p.fase = p.proposals.length === 2 ? "listo" : "nuevo"; p.log = arr(p.log); log(p, "Harness", "Proyecto importado desde " + f.name);
+      S.projects.unshift(p); S.current = p.id; store.saveProject(p); render(); setView("propuesta-a"); toast("Proyecto importado");
+    } catch { toast("Ese archivo no es un proyecto de la Fábrica (.json con framework y proposals)."); }
+    e.target.value = "";
+  }; r.readAsText(f);
+});
+$("#expMem").addEventListener("click", () => dl("aprendizajes.md", "# Aprendizajes del estudio\n\n" + (S.memory.lecciones || []).map(l => `- [${l.tipo}] ${l.texto}${l.evidencia ? `  \n  _Evidencia: ${l.evidencia}_` : ""}`).join("\n") + "\n"));
+
+(async function boot() {
+  setView(location.hash.slice(1));
+  const sp = sampleProject();
+  S.projects = [sp]; S.current = sp.id; render();
+  await store.init();
+  const data = await store.load();
+  S.projects = [...arr(data.projects).map(p => { (p.proposals || []).forEach(normProposal); if (p.framework) p.framework = normFramework(p.framework); if (["estrategia", "identidad"].includes(p.fase)) { p.fase = p.proposals?.length === 2 ? "revision" : "nuevo"; } return p; }).sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt))), sp];
+  S.memory = Object.assign({ lecciones: [], proyectos: 0 }, data.memory || {});
+  let last = null; try { last = localStorage.getItem("fabrica.current"); } catch { }
+  S.current = S.projects.find(p => p.id === last)?.id || S.projects[0].id;
+  render();
+  if (window.claude?.use) {
+    claude.use("sample").then(s => { S.sample = s; $("#noSample").hidden = !!s; }).catch(() => { $("#noSample").hidden = false; });
+    claude.use("desktop").then(async d => { if (d && !d.fs && (await d.install.state().catch(() => "unavailable")) === "available") { const b = $("#installBtn"); b.hidden = false; b.onclick = () => d.install.request().then(r => r === "installed" && toast("Instalando la Fábrica en tu escritorio")).catch(() => toast("No se pudo instalar desde aquí")); } }).catch(() => { });
+  } else $("#noSample").hidden = false;
+})();
+</script>

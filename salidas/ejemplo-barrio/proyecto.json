@@ -1,0 +1,604 @@
+{
+  "id": "ejemplo",
+  "name": "Barrio (ejemplo)",
+  "fase": "listo",
+  "favorita": "A",
+  "brief": "Ejemplo armado a partir del framework de la imagen adjunta.\n\nTarget: profesionales, obreros y familias en pobreza extrema, con interés en emprender y que buscan precios más accesibles.\nCompetidores clave: Wow, Favo, Puesto.\nStakeholders: distribuidores nacionales e internacionales, entidades financieras, asociaciones de vecinos, comercios y bodegas, emprendedores.\nVentaja competitiva: modelo de negocios innovador, trabajamos para la gente, creamos una relación de confianza, oportunidades financieras.\nServicios: programa social y programa financiero.",
+  "log": [
+    {
+      "t": "—",
+      "a": "Harness",
+      "m": "Proyecto de ejemplo: no se llamó a ningún agente para crearlo."
+    }
+  ],
+  "framework": {
+    "marca": "Barrio",
+    "sector": "Comercio de cercanía y oportunidades financieras para familias emprendedoras (hipótesis a partir del framework)",
+    "atributos": {
+      "son": [
+        {
+          "nombre": "Amigos",
+          "porque": "Estamos cerca, hablamos de tú a tú"
+        },
+        {
+          "nombre": "Comprometidos",
+          "porque": "Cumplimos lo que prometemos"
+        },
+        {
+          "nombre": "Sociales",
+          "porque": "Generamos oportunidades para el barrio"
+        },
+        {
+          "nombre": "Integradores",
+          "porque": "Nadie se queda fuera"
+        },
+        {
+          "nombre": "Modernos",
+          "porque": "Tecnología simple al servicio de la gente"
+        }
+      ],
+      "noSon": [
+        "Lejanos, apáticos",
+        "Desordenados, desinteresados",
+        "Interesados, egoístas",
+        "Excluyentes",
+        "Anticuados"
+      ]
+    },
+    "vision": "(ejemplo) Ser la red que hace progresar a los barrios emprendedores.",
+    "visionPalabras": [
+      "Crowd",
+      "Develop",
+      "Outcome",
+      "Level-up",
+      "Recognition",
+      "Influence"
+    ],
+    "mision": "(ejemplo) Acercar precios justos, crédito y comunidad a quien quiere salir adelante.",
+    "misionPalabras": [
+      "Creative",
+      "Resource",
+      "Impact",
+      "Empowerment",
+      "Value",
+      "Spreading"
+    ],
+    "productos": [
+      "(no legible en la imagen)"
+    ],
+    "servicios": [
+      "Programa social",
+      "Programa financiero"
+    ],
+    "target": [
+      "Profesionales, obreros, pobreza extrema",
+      "Interés en emprender",
+      "Buscan precios más accesibles"
+    ],
+    "competidores": [
+      {
+        "nombre": "Wow",
+        "nota": ""
+      },
+      {
+        "nombre": "Favo",
+        "nota": ""
+      },
+      {
+        "nombre": "Puesto",
+        "nota": ""
+      }
+    ],
+    "propuestaValor": {
+      "que": "(ejemplo) Productos de primera necesidad a precio justo",
+      "como": "(ejemplo) Compras en comunidad y red de bodegas aliadas",
+      "resultado": "(ejemplo) Más ahorro y oportunidades para emprender"
+    },
+    "stakeholders": [
+      "Distribuidores nacionales e internacionales",
+      "Entidades financieras",
+      "Asociaciones de vecinos",
+      "Comercios y bodegas",
+      "Emprendedores"
+    ],
+    "ventaja": {
+      "nucleo": "Un modelo que trabaja para la gente",
+      "puntos": [
+        "Modelo de negocios innovador",
+        "Trabajamos para la gente",
+        "Creamos una relación de confianza",
+        "Oportunidades financieras"
+      ]
+    },
+    "keywords": [
+      "barrio",
+      "confianza",
+      "comunidad",
+      "progreso",
+      "ahorro",
+      "emprender"
+    ],
+    "vacios": [
+      "¿Cuál es el nombre real de la marca?",
+      "¿Qué productos concretos vende?",
+      "¿En qué país y ciudades opera?"
+    ]
+  },
+  "candidatas": [
+    {
+      "bigIdea": "Lo que juntamos, rinde más",
+      "tagline": "Juntos compramos mejor.",
+      "insight": "Solo, el precio me gana; en grupo, le gano yo.",
+      "territorio": "Comunidad"
+    },
+    {
+      "bigIdea": "El barrio sube",
+      "tagline": "Cada compra es un paso arriba.",
+      "insight": "Quiero progresar sin dejar de ser de aquí.",
+      "territorio": "Progreso con orgullo"
+    },
+    {
+      "bigIdea": "Precio de vecino",
+      "tagline": "Lo justo, de confianza.",
+      "insight": "Desconfío de las ofertas que parecen trampa.",
+      "territorio": "Confianza"
+    }
+  ],
+  "seleccionPorque": "Ejemplo: A habla de comunidad y calidez (universo redondo, verde y naranja); B habla de progreso y orgullo popular (universo gráfico, fluorescente, de cartel). Llevan a mundos visuales opuestos.",
+  "proposals": [
+    {
+      "id": "A",
+      "bigIdea": "Lo que juntamos, rinde más",
+      "tagline": "Juntos compramos mejor.",
+      "insight": "Solo, el precio me gana; en grupo, le gano yo.",
+      "concepto": "Barrio convierte la compra en un acto colectivo. Cuando los vecinos se juntan, el kilo cuesta menos, la bodega vende más y el dinero se queda en casa. La marca se ve como una mesa compartida: formas que se tocan, colores de mercado y una voz que siempre dice “nosotros”.",
+      "conexionFramework": [
+        {
+          "pilar": "Atributos: Amigos, Sociales",
+          "como": "Tono en primera persona plural y formas que se superponen como personas reunidas."
+        },
+        {
+          "pilar": "Target: buscan precios accesibles",
+          "como": "La idea promete ahorro, pero desde el poder del grupo, no desde la carencia."
+        },
+        {
+          "pilar": "Ventaja: relación de confianza",
+          "como": "El símbolo es literal: tres círculos que solo existen completos al tocarse."
+        },
+        {
+          "pilar": "Stakeholders: asociaciones de vecinos",
+          "como": "La compra comunitaria las vuelve aliadas naturales de la marca."
+        }
+      ],
+      "personalidad": [
+        {
+          "izq": "Rebelde",
+          "der": "Conservadora",
+          "valor": 40
+        },
+        {
+          "izq": "Moderna",
+          "der": "Clásica",
+          "valor": 25
+        },
+        {
+          "izq": "Cálida",
+          "der": "Fría",
+          "valor": 15
+        },
+        {
+          "izq": "Lúdica",
+          "der": "Seria",
+          "valor": 35
+        },
+        {
+          "izq": "Popular",
+          "der": "Exclusiva",
+          "valor": 10
+        }
+      ],
+      "arquetipo": "El Amigo",
+      "tono": "Cercano, claro y optimista. Habla de “nosotros”, usa verbos de acción y nunca la palabra “barato”.",
+      "moodboard": {
+        "palabras": [
+          "mesa compartida",
+          "bolsa llena",
+          "vecindad",
+          "ronda",
+          "tarde cálida"
+        ],
+        "texturas": [
+          "puntos",
+          "grano"
+        ],
+        "fotografia": "Retrato documental cálido, luz de tarde, personas reales en sus bodegas y casas; encuadres que siempre incluyen a más de una persona.",
+        "referencias": [
+          {
+            "descripcion": "Fotografía documental de mercados de barrio en Latinoamérica",
+            "busqueda": "fotografía documental mercado barrio latinoamérica"
+          },
+          {
+            "descripcion": "Identidades de cooperativas con formas circulares",
+            "busqueda": "cooperative brand identity circles"
+          },
+          {
+            "descripcion": "Ilustración plana de comunidad con paleta cálida",
+            "busqueda": "community flat illustration warm palette"
+          }
+        ],
+        "composicion": "Formas redondas que se tocan, mucho aire y jerarquía clara.",
+        "imagenes": []
+      },
+      "tipografia": {
+        "display": {
+          "familia": "Bricolage Grotesque",
+          "peso": 800,
+          "porque": "Grotesca con carácter y contraste óptico: cercana sin ser infantil."
+        },
+        "texto": {
+          "familia": "Figtree",
+          "peso": 400,
+          "porque": "Geométrica amable y muy legible en pantallas pequeñas."
+        }
+      },
+      "colores": [
+        {
+          "nombre": "Verde confianza",
+          "hex": "#14594A",
+          "rol": "primario",
+          "porque": "Estabilidad y dinero que crece, sin la frialdad del azul bancario."
+        },
+        {
+          "nombre": "Naranja mercado",
+          "hex": "#FF8A3D",
+          "rol": "secundario",
+          "porque": "El color de los toldos y las frutas: energía de compra."
+        },
+        {
+          "nombre": "Lila comunidad",
+          "hex": "#B9A7FF",
+          "rol": "acento",
+          "porque": "Toque fresco y moderno que hereda el lila del framework."
+        },
+        {
+          "nombre": "Tinta",
+          "hex": "#17162B",
+          "rol": "oscuro",
+          "porque": "Texto con máximo contraste."
+        },
+        {
+          "nombre": "Papel",
+          "hex": "#FBFAFF",
+          "rol": "claro",
+          "porque": "Fondo limpio que deja respirar."
+        }
+      ],
+      "logo": {
+        "tipo": "combinado",
+        "texto": "barrio",
+        "mayusculas": false,
+        "tracking": -0.02,
+        "peso": 800,
+        "disposicion": "horizontal",
+        "simbolo_svg": "<svg viewBox='0 0 100 100'><circle class='c1' cx='34' cy='38' r='24'/><circle class='c2' cx='66' cy='38' r='24' opacity='0.92'/><circle class='c3' cx='50' cy='66' r='24' opacity='0.92'/></svg>",
+        "racional": "Tres círculos —tres vecinos— que forman algo más grande al superponerse. La zona compartida es donde ocurre el ahorro."
+      },
+      "patron_svg": "<svg viewBox='0 0 40 40'><circle class='c1' cx='10' cy='10' r='6'/><circle class='c2' cx='30' cy='30' r='6'/><circle class='c3' cx='30' cy='10' r='3'/></svg>",
+      "estiloIconos": "Trazo redondeado de 2 px, esquinas suaves, geometría simple",
+      "iconos": [
+        {
+          "nombre": "Compra",
+          "svg": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 8h14l-1 12H6L5 8z'/><path d='M9 8V6a3 3 0 0 1 6 0v2'/></svg>"
+        },
+        {
+          "nombre": "Bodega",
+          "svg": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 11l9-7 9 7'/><path d='M5 10v10h14V10'/><path d='M10 20v-6h4v6'/></svg>"
+        },
+        {
+          "nombre": "Ahorro",
+          "svg": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='9' r='6'/><path d='M15.5 9.5a6 6 0 1 1-6 6'/></svg>"
+        },
+        {
+          "nombre": "Comunidad",
+          "svg": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='8' r='3'/><circle cx='17' cy='9' r='2.5'/><path d='M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6'/><path d='M15 14.5c3 0 6 2 6 5.5'/></svg>"
+        },
+        {
+          "nombre": "Reparto",
+          "svg": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 7h11v9H2z'/><path d='M13 10h4l3 3v3h-7'/><circle cx='6' cy='18' r='2'/><circle cx='17' cy='18' r='2'/></svg>"
+        },
+        {
+          "nombre": "Confianza",
+          "svg": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z'/></svg>"
+        }
+      ],
+      "aplicaciones": {
+        "tarjeta": {
+          "titular": "Hola, vecina.",
+          "texto": "Tu bodega, más fuerte en comunidad."
+        },
+        "post": {
+          "titular": "Juntos, el kilo cuesta menos.",
+          "texto": "Únete a la compra del sábado."
+        },
+        "letrero": {
+          "titular": "barrio",
+          "texto": "Bodega aliada"
+        }
+      },
+      "qa": {
+        "puntaje": {
+          "coherencia": 8,
+          "originalidad": 6,
+          "diferenciacion": 8,
+          "ejecucion": 8,
+          "total": 7.5
+        },
+        "fortalezas": [
+          "El símbolo explica la idea sin palabras"
+        ],
+        "observaciones": [
+          "Los círculos superpuestos son un recurso frecuente en marcas de comunidad: buscar un gesto más propio (la bolsa, la mesa).",
+          "El lila tiene poco contraste con el papel: úsalo solo como fondo o acento."
+        ],
+        "checks": {}
+      },
+      "feedback": {
+        "estrellas": 0,
+        "notas": ""
+      }
+    },
+    {
+      "id": "B",
+      "bigIdea": "El barrio sube",
+      "tagline": "Cada compra es un paso arriba.",
+      "insight": "Quiero progresar sin dejar de ser de aquí.",
+      "concepto": "Barrio celebra al emprendedor que progresa con orgullo de origen. Toma prestada la energía de la gráfica popular —carteles fluorescentes, rotulación de bodegas, tipografía de letrero— y la ordena con una retícula moderna. Cada compra, cada crédito y cada venta es un escalón visible.",
+      "conexionFramework": [
+        {
+          "pilar": "Visión: Level-up, Develop",
+          "como": "El escalón es el gesto central: progreso que se ve."
+        },
+        {
+          "pilar": "Target: interés en emprender",
+          "como": "Le habla al emprendedor como protagonista, no como beneficiario."
+        },
+        {
+          "pilar": "Ventaja: oportunidades financieras",
+          "como": "El crédito se comunica como el siguiente escalón, no como deuda."
+        },
+        {
+          "pilar": "Atributos: Modernos, Integradores",
+          "como": "Códigos populares reconocibles, ordenados con lenguaje contemporáneo."
+        }
+      ],
+      "personalidad": [
+        {
+          "izq": "Rebelde",
+          "der": "Conservadora",
+          "valor": 20
+        },
+        {
+          "izq": "Moderna",
+          "der": "Clásica",
+          "valor": 45
+        },
+        {
+          "izq": "Cálida",
+          "der": "Fría",
+          "valor": 20
+        },
+        {
+          "izq": "Lúdica",
+          "der": "Seria",
+          "valor": 15
+        },
+        {
+          "izq": "Popular",
+          "der": "Exclusiva",
+          "valor": 5
+        }
+      ],
+      "arquetipo": "El Héroe popular",
+      "tono": "Enérgico, orgulloso y directo. Frases cortas en presente; celebra logros concretos.",
+      "moodboard": {
+        "palabras": [
+          "fluorescente",
+          "letrero",
+          "escalón",
+          "orgullo",
+          "ritmo"
+        ],
+        "texturas": [
+          "bloques",
+          "lineas"
+        ],
+        "fotografia": "Flash directo, color saturado, retratos de emprendedores mirando a cámara con orgullo frente a su negocio.",
+        "referencias": [
+          {
+            "descripcion": "Carteles chicha de Lima: gráfica popular con colores fluorescentes",
+            "busqueda": "cartel chicha Lima"
+          },
+          {
+            "descripcion": "Rotulación a mano de bodegas y fachadas",
+            "busqueda": "rotulación popular fachadas bodega"
+          },
+          {
+            "descripcion": "Tipografía inspirada en letreros urbanos verticales",
+            "busqueda": "Bungee typeface signage"
+          }
+        ],
+        "composicion": "Bloques de color planos, titulares enormes y diagonales ascendentes.",
+        "imagenes": []
+      },
+      "tipografia": {
+        "display": {
+          "familia": "Bungee",
+          "peso": 400,
+          "porque": "Nació de la señalética urbana: tiene la voz del letrero de barrio."
+        },
+        "texto": {
+          "familia": "Work Sans",
+          "peso": 400,
+          "porque": "Neutra y robusta, equilibra la intensidad del display."
+        }
+      },
+      "colores": [
+        {
+          "nombre": "Rosa chicha",
+          "hex": "#FF2E88",
+          "rol": "primario",
+          "porque": "El color más reconocible de la gráfica popular fluorescente."
+        },
+        {
+          "nombre": "Amarillo letrero",
+          "hex": "#FFE14D",
+          "rol": "secundario",
+          "porque": "Llamado de atención, energía de oferta."
+        },
+        {
+          "nombre": "Azul eléctrico",
+          "hex": "#2340FF",
+          "rol": "acento",
+          "porque": "Modernidad y confianza en clave popular."
+        },
+        {
+          "nombre": "Negro",
+          "hex": "#121212",
+          "rol": "oscuro",
+          "porque": "Estructura y contraste."
+        },
+        {
+          "nombre": "Blanco",
+          "hex": "#FFFFFF",
+          "rol": "claro",
+          "porque": "Respiro entre bloques intensos."
+        }
+      ],
+      "logo": {
+        "tipo": "combinado",
+        "texto": "barrio",
+        "mayusculas": true,
+        "tracking": 0.04,
+        "peso": 400,
+        "disposicion": "horizontal",
+        "simbolo_svg": "<svg viewBox='0 0 100 100'><polygon class='c1' points='10,90 10,70 30,70 30,50 50,50 50,30 70,30 70,10 90,10 90,90'/><rect class='c2' x='74' y='74' width='16' height='16'/></svg>",
+        "racional": "Una escalera que también es la silueta de una calle de casas que crecen. El cuadrado amarillo es la ventana encendida: alguien está trabajando."
+      },
+      "patron_svg": "<svg viewBox='0 0 40 40'><polygon class='c1' points='0,40 0,30 10,30 10,20 20,20 20,30 30,30 30,40'/><rect class='c3' x='28' y='4' width='8' height='8'/></svg>",
+      "estiloIconos": "Trazo de 2.5 px con terminaciones rectas y esquinas en ángulo",
+      "iconos": [
+        {
+          "nombre": "Compra",
+          "svg": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='square' stroke-linejoin='miter'><path d='M4 8h16v13H4z'/><path d='M8 8V4h8v4'/></svg>"
+        },
+        {
+          "nombre": "Bodega",
+          "svg": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='square' stroke-linejoin='miter'><path d='M3 10h18'/><path d='M4 10l2-6h12l2 6'/><path d='M5 10v11h14V10'/><path d='M10 21v-6h4v6'/></svg>"
+        },
+        {
+          "nombre": "Ahorro",
+          "svg": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='square' stroke-linejoin='miter'><path d='M4 5h12v4H4z'/><path d='M8 10h12v4H8z'/><path d='M4 15h12v4H4z'/></svg>"
+        },
+        {
+          "nombre": "Socios",
+          "svg": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='square' stroke-linejoin='miter'><path d='M5 4h5v5H5z'/><path d='M14 4h5v5h-5z'/><path d='M3 20v-7h9v7'/><path d='M12 20v-7h9v7'/></svg>"
+        },
+        {
+          "nombre": "Progreso",
+          "svg": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='square' stroke-linejoin='miter'><path d='M3 21h6v-6h6V9h6V3'/></svg>"
+        },
+        {
+          "nombre": "Crédito",
+          "svg": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='square' stroke-linejoin='miter'><path d='M13 2L4 14h7l-1 8 9-12h-7z'/></svg>"
+        }
+      ],
+      "aplicaciones": {
+        "tarjeta": {
+          "titular": "Emprendedora en ascenso",
+          "texto": "Bodega aliada desde 2026."
+        },
+        "post": {
+          "titular": "¡Subiste un escalón!",
+          "texto": "Tu crédito Barrio ya está activo."
+        },
+        "letrero": {
+          "titular": "BARRIO",
+          "texto": "Aquí el barrio sube"
+        }
+      },
+      "qa": {
+        "puntaje": {
+          "coherencia": 8,
+          "originalidad": 8,
+          "diferenciacion": 9,
+          "ejecucion": 6,
+          "total": 7.8
+        },
+        "fortalezas": [
+          "Código cultural real y reconocible por el público"
+        ],
+        "observaciones": [
+          "El rosa sobre blanco no alcanza 4.5:1 para texto: úsalo en bloques, no en texto pequeño.",
+          "Riesgo de caricatura: mantener la gráfica popular en titulares y dejar la interfaz sobria."
+        ],
+        "checks": {}
+      },
+      "feedback": {
+        "estrellas": 0,
+        "notas": ""
+      }
+    }
+  ],
+  "research": {
+    "tensiones": [
+      "Quieren precios bajos, pero desconfían de lo barato.",
+      "Quieren progresar, pero sin sentir que dejan atrás a su barrio.",
+      "Necesitan crédito, pero temen a los bancos."
+    ],
+    "territorios": [
+      {
+        "nombre": "Comunidad",
+        "descripcion": "El grupo como fuerza económica."
+      },
+      {
+        "nombre": "Progreso con orgullo",
+        "descripcion": "El emprendedor como héroe local."
+      },
+      {
+        "nombre": "Confianza",
+        "descripcion": "La marca como vecino que no falla."
+      }
+    ],
+    "exploracion": [
+      {
+        "palabra": "barrio",
+        "significados": "Cada una de las partes en que se divide un pueblo o ciudad (RAE).",
+        "asociaciones": "Identidad, pertenencia, vecindad, bodega de la esquina.",
+        "angulo": "Nombre e identidad compartida."
+      }
+    ],
+    "benchmark": [
+      {
+        "nombre": "Wow",
+        "posicionamiento": "Por verificar",
+        "codigosVisuales": "Por verificar",
+        "oportunidad": "Por verificar",
+        "certeza": "hipotesis"
+      },
+      {
+        "nombre": "Favo",
+        "posicionamiento": "Por verificar",
+        "codigosVisuales": "Por verificar",
+        "oportunidad": "Por verificar",
+        "certeza": "hipotesis"
+      },
+      {
+        "nombre": "Puesto",
+        "posicionamiento": "Por verificar",
+        "codigosVisuales": "Por verificar",
+        "oportunidad": "Por verificar",
+        "certeza": "hipotesis"
+      }
+    ]
+  }
+}
