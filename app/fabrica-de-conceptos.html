@@ -287,6 +287,9 @@ main{padding-block:20px 60px}
 
 <script>
 "use strict";
+/* The connection to Claude is requested first thing, so it is never waiting behind the saved projects. */
+const samplePromise = (window.claude?.use ? claude.use("sample") : Promise.resolve(null)).catch(() => null);
+async function waitSample() { if (!S.sample) S.sample = await samplePromise; return S.sample; }
 /* ============ Utilities ============ */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -461,7 +464,7 @@ function log(p, agent, msg) {
 function setAgent(k, s, note) { S.agentState[k] = { s, note }; renderHarness(); }
 
 async function agent(p, key, task, data, schema, tier = "default") {
-  if (!S.sample) throw { code: "no_sample", message: "Claude no está disponible en esta vista" };
+  if (!(await waitSample())) throw { code: "no_sample", message: "Claude no está disponible en esta vista" };
   const a = AGENTS[key];
   const prompt = `${MINDSET}
 
@@ -565,6 +568,7 @@ async function runFactory() {
   if (p.sample) { toast("El ejemplo es de solo lectura. Crea un briefing nuevo."); return; }
   p.brief = $("#briefText").value.trim(); p.name = $("#projName").value.trim() || p.name;
   if (p.brief.length < 40) { toast("Escribe o sube un briefing más completo (al menos un par de párrafos)."); return; }
+  if (!S.sample) { $("#runHint").textContent = "Conectando con Claude…"; await waitSample(); }
   if (!S.sample) { $("#noSample").hidden = false; return; }
   startRun();
   try {
@@ -632,7 +636,7 @@ async function qaStep(p, pr, other) {
 /* Prompt-adjust one proposal */
 async function adjust(pr, instr) {
   const p = cur(); if (!instr.trim()) return;
-  if (!S.sample) { toast(errCopy({ code: "no_sample" })); return; }
+  if (!(await waitSample())) { toast(errCopy({ code: "no_sample" })); return; }
   if (p.sample) { toast("El ejemplo es de solo lectura. Crea un briefing nuevo para ajustar."); return; }
   const box = $(`#adj-${pr.id}`); const btn = $(`#adjBtn-${pr.id}`); const st = $(`#adjSt-${pr.id}`);
   btn.disabled = true; st.textContent = "Pensando…"; S.ctl = new AbortController();
@@ -660,7 +664,7 @@ function snapshot(pr, label) {
 async function learn() {
   const p = cur(); if (!p?.proposals?.length) return;
   if (p.sample) { toast("El ejemplo no enseña nada nuevo: corre un briefing real."); return; }
-  if (!S.sample) { toast(errCopy({ code: "no_sample" })); return; }
+  if (!(await waitSample())) { toast(errCopy({ code: "no_sample" })); return; }
   const btn = $("#learnBtn"); btn.disabled = true; $("#learnHint").textContent = "El Manager está destilando lecciones…";
   try {
     const señales = p.proposals.map(pr => ({
@@ -1133,7 +1137,7 @@ $("#expMem").addEventListener("click", () => dl("aprendizajes.md", "# Aprendizaj
   S.current = S.projects.find(p => p.id === last)?.id || S.projects[0].id;
   render();
   if (window.claude?.use) {
-    claude.use("sample").then(s => { S.sample = s; $("#noSample").hidden = !!s; }).catch(() => { $("#noSample").hidden = false; });
+    samplePromise.then(s => { S.sample = s; $("#noSample").hidden = !!s; });
     claude.use("desktop").then(async d => { if (d && !d.fs && (await d.install.state().catch(() => "unavailable")) === "available") { const b = $("#installBtn"); b.hidden = false; b.onclick = () => d.install.request().then(r => r === "installed" && toast("Instalando la Fábrica en tu escritorio")).catch(() => toast("No se pudo instalar desde aquí")); } }).catch(() => { });
   } else $("#noSample").hidden = false;
 })();
