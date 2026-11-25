@@ -244,7 +244,7 @@ main{padding-block:20px 60px}
           <button class="btn" id="stopBtn" hidden>Detener</button>
           <span class="muted" id="runHint" style="font-size:12.5px"></span>
         </div>
-        <div id="noSample" class="notice warn" hidden>Los agentes necesitan Claude. Abre esta página en claude.ai o en la app de escritorio de Claude y acepta el permiso cuando lo pida. Mientras tanto puedes explorar y editar el ejemplo.</div>
+        <div id="conn" class="notice" aria-live="polite"><b>Conectando con Claude…</b></div>
       </div>
       <div class="card">
         <div class="row"><h2 class="grow">El harness</h2><span class="label">7 agentes · 2 fases · 1 control de calidad</span></div>
@@ -465,7 +465,7 @@ function log(p, agent, msg) {
 function setAgent(k, s, note) { S.agentState[k] = { s, note }; renderHarness(); }
 
 async function agent(p, key, task, data, schema, tier = "default") {
-  if (!S.sample) throw { code: "no_sample", message: "Claude no está disponible en esta vista" };
+  if (!(await ensureSample())) throw { code: "no_sample", message: "Claude no está disponible en esta vista" };
   const a = AGENTS[key];
   const prompt = `${MINDSET}
 
@@ -496,6 +496,7 @@ ${schema}`;
     return out || {};
   } catch (e) {
     setAgent(key, "error", e.code || "error");
+    if (e?.code === "not_granted") { conn.state = "denied"; renderConn(true); }
     log(p, a.name, "error: " + (e.code || "") + " " + (e.message || ""));
     throw e;
   }
@@ -505,7 +506,7 @@ function errCopy(e) {
     not_granted: "No se dio permiso para usar Claude en esta página. Recarga y acepta el permiso para que los agentes trabajen.",
     rate_limited: "Llegaste al límite de uso por ahora. Espera unos minutos y vuelve a intentarlo.",
     cancelled: "Detenido.", invalid_json: "Un agente respondió en un formato que no se pudo leer. Vuelve a intentarlo; si se repite, simplifica el briefing.",
-    no_sample: "Los agentes necesitan abrir esta página en claude.ai o en la app de Claude.", prompt_too_large: "El briefing es demasiado largo. Resúmelo a lo esencial."
+    no_sample: "Claude no está conectado en esta vista. Mira el recuadro de conexión en la pestaña Briefing.", prompt_too_large: "El briefing es demasiado largo. Resúmelo a lo esencial."
   })[e?.code] || ("Algo falló: " + (e?.message || e?.code || "error desconocido"));
 }
 
@@ -563,13 +564,59 @@ function autoChecks(pr, other) {
 const core = pr => pr && { bigIdea: pr.bigIdea, tagline: pr.tagline, insight: pr.insight, concepto: pr.concepto };
 const compactProp = pr => { const x = clone(pr); delete x.history; delete x.ediciones; delete x.qa; delete x.feedback; x.moodboard && (x.moodboard.imagenes = (x.moodboard.imagenes || []).length + " imágenes subidas"); return x; };
 
+/* ============ Connection to Claude: diagnose, ask, explain ============ */
+const conn = { state: "checking" };
+let samplePromise = null;
+function checkClaude() {
+  if (!window.claude?.use) { conn.state = "no-runtime"; renderConn(); return; }
+  samplePromise = claude.use("sample").catch(() => null);
+  samplePromise.then(async s => {
+    S.sample = s;
+    S.perms = await claude.use("permissions").catch(() => null);
+    const st = S.perms ? await S.perms.state("sample").catch(() => "unknown") : "unknown";
+    conn.state = !s ? "unavailable" : st === "unavailable" ? "unavailable" : st;   // granted | prompt | denied | unknown
+    renderConn();
+  });
+}
+async function ensureSample() {
+  if (S.sample) return S.sample;
+  if (samplePromise) { renderConn(); S.sample = await samplePromise; }
+  return S.sample;
+}
+function renderConn(flash) {
+  const el = $("#conn"); if (!el) return;
+  const link = "https://claude.ai/artifact/FvVswL6keTTyTEnc58htYk";
+  const M = {
+    checking: ["", "<b>Conectando con Claude…</b> Puede tardar unos segundos."],
+    granted: ["ok", "<b>Claude conectado.</b> Los agentes pueden trabajar."],
+    prompt: ["", "<b>Falta tu permiso.</b> Los agentes usan tu cuenta de Claude. Presiona <b>Dar permiso</b> (o Iniciar la fábrica) y acepta el aviso que aparece."],
+    unknown: ["", "<b>Claude disponible.</b> Al iniciar te pedirá permiso una vez; acéptalo."],
+    denied: ["warn", "<b>El permiso está rechazado.</b> Ábrelo y activa “Claude” para esta página."],
+    unavailable: ["warn", "<b>Esta vista no deja que la página use Claude.</b> Suele pasar en el panel lateral de Claude Code o en una vista previa. Abre el enlace en una pestaña normal del navegador o en el chat de la app de escritorio: <code>" + link + "</code>"],
+    "no-runtime": ["warn", "<b>La página no está abierta dentro de Claude</b> (por ejemplo, el archivo .html abierto con doble clic). Ábrela desde <code>" + link + "</code>"]
+  };
+  const [tone, html] = M[conn.state] || M.unknown;
+  el.className = "notice" + (tone ? " " + tone : ""); el.hidden = conn.state === "granted" && !flash;
+  el.innerHTML = html + (conn.state === "prompt" || conn.state === "unknown" ? ` <div class="row" style="margin-top:8px"><button class="btn primary sm" id="connAsk">Dar permiso</button></div>` : "")
+    + (conn.state === "denied" || conn.state === "unavailable" ? ` <div class="row" style="margin-top:8px">${conn.state === "denied" ? `<button class="btn sm" id="connManage">Abrir permisos</button>` : ""}<button class="btn sm" id="connCopy">Copiar enlace</button></div>` : "");
+  $("#connAsk")?.addEventListener("click", async () => {
+    try {
+      if (S.perms) { const r = await S.perms.request(["sample"]); conn.state = r.sample || conn.state; }
+      if (conn.state !== "granted" && S.sample) { await S.sample("Responde solo: OK", { modelTier: "quick", cache: false }); conn.state = "granted"; }
+    } catch (e) { conn.state = e?.code === "not_granted" ? "denied" : conn.state; if (e?.code && e.code !== "not_granted") toast(errCopy(e)); }
+    renderConn(true);
+  });
+  $("#connManage")?.addEventListener("click", () => S.perms?.manage().then(checkClaude).catch(() => toast("Abre el menú Permisos de esta página (arriba, junto al título) y activa Claude.")));
+  $("#connCopy")?.addEventListener("click", () => navigator.clipboard.writeText(link).then(() => toast("Enlace copiado")).catch(() => toast(link)));
+}
+
 /* ============ Pipeline ============ */
 async function runFactory() {
   const p = cur(); if (!p || S.running) return;
   if (p.sample) { toast("El ejemplo es de solo lectura. Crea un briefing nuevo."); return; }
   p.brief = $("#briefText").value.trim(); p.name = $("#projName").value.trim() || p.name;
   if (p.brief.length < 40) { toast("Escribe o sube un briefing más completo (al menos un par de párrafos)."); return; }
-  if (!S.sample) { $("#noSample").hidden = false; return; }
+  if (!(await ensureSample())) { renderConn(true); $("#conn").scrollIntoView({ block: "center" }); return; }
   startRun();
   try {
     if (p.fase === "revision" && p.proposals?.length === 2) await phase2(p);
@@ -679,7 +726,7 @@ async function qaStep(p, pr, other) {
 /* Prompt-adjust one proposal */
 async function adjust(pr, instr) {
   const p = cur(); if (!instr.trim()) return;
-  if (!S.sample) { toast(errCopy({ code: "no_sample" })); return; }
+  if (!(await ensureSample())) { toast(errCopy({ code: "no_sample" })); setView("briefing"); renderConn(true); return; }
   if (p.sample) { toast("El ejemplo es de solo lectura. Crea un briefing nuevo para ajustar."); return; }
   const box = $(`#adj-${pr.id}`); const btn = $(`#adjBtn-${pr.id}`); const st = $(`#adjSt-${pr.id}`);
   btn.disabled = true; st.textContent = "Pensando…"; S.ctl = new AbortController();
@@ -707,7 +754,7 @@ function snapshot(pr, label) {
 async function learn() {
   const p = cur(); if (!p?.proposals?.length) return;
   if (p.sample) { toast("El ejemplo no enseña nada nuevo: corre un briefing real."); return; }
-  if (!S.sample) { toast(errCopy({ code: "no_sample" })); return; }
+  if (!(await ensureSample())) { toast(errCopy({ code: "no_sample" })); setView("briefing"); renderConn(true); return; }
   const btn = $("#learnBtn"); btn.disabled = true; $("#learnHint").textContent = "El Manager está destilando lecciones…";
   try {
     const señales = p.proposals.map(pr => ({
@@ -806,7 +853,7 @@ function wireDirection(p, box) {
   $("#dirGo", box).addEventListener("click", async () => {
     if (S.running) return;
     if (!d.texto.trim() && !d.atajos.length && !d.territorio) { $("#dirHint").textContent = "Dale al menos una dirección: escribe, elige un atajo o un territorio."; $("#dirText").focus(); return; }
-    if (!S.sample) { toast(errCopy({ code: "no_sample" })); return; }
+    if (!(await ensureSample())) { toast(errCopy({ code: "no_sample" })); setView("briefing"); renderConn(true); return; }
     startRun();
     try { await ideasStep(p, { ...d, texto: d.texto.trim() }); dirDrafts[p.id] = { texto: "", atajos: [], territorio: "", alcance: d.alcance }; toast("Big ideas actualizadas: revisa cómo entendió tu dirección"); }
     catch (e) { toast(errCopy(e)); }
@@ -1219,8 +1266,8 @@ $("#expMem").addEventListener("click", () => dl("aprendizajes.md", "# Aprendizaj
   S.current = S.projects.find(p => p.id === last)?.id || S.projects[0].id;
   render();
   if (window.claude?.use) {
-    claude.use("sample").then(s => { S.sample = s; $("#noSample").hidden = !!s; }).catch(() => { $("#noSample").hidden = false; });
+    checkClaude();
     claude.use("desktop").then(async d => { if (d && !d.fs && (await d.install.state().catch(() => "unavailable")) === "available") { const b = $("#installBtn"); b.hidden = false; b.onclick = () => d.install.request().then(r => r === "installed" && toast("Instalando la Fábrica en tu escritorio")).catch(() => toast("No se pudo instalar desde aquí")); } }).catch(() => { });
-  } else $("#noSample").hidden = false;
+  } else { conn.state = "no-runtime"; renderConn(); }
 })();
 </script>
