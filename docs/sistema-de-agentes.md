@@ -57,6 +57,14 @@ flowchart TD
 
 **Fase 1 · Estrategia** (Manager → Research → Redacción → Manager). Termina en un *checkpoint humano*: el sistema se detiene para que revises el framework y las big ideas antes de gastar esfuerzo en lo visual. Esto refleja el principio del estudio: primero se cocina el concepto.
 
+**Iterar las big ideas es una conversación dirigida, nunca un "otra vez".** En el checkpoint (o después, aceptando perder la identidad de lo reemplazado) defines:
+
+1. **Qué reemplazar**: las dos, solo A o solo B. La que conservas no se toca, ni su identidad visual.
+2. **Hacia dónde**: atajos combinables (más emocional, más disruptiva, que hable como el público…), un territorio del research y tus propias palabras. Sin dirección, el botón no corre.
+3. **Comprobación**: el Redactor devuelve en una frase *cómo entendió* tu dirección, visible antes de seguir. Si no te entendió, lo ves en el acto.
+
+El Redactor recibe además todas las big ideas ya vistas para no repetirlas, y el Manager elige solo la que reemplaza, distinta de la conservada. También puedes promover a mano cualquier candidata a A o B sin gastar una llamada. Cada dirección queda registrada y el Manager la usa al aprender: tener que redirigir es señal de que el primer intento no leyó bien el briefing.
+
 **Fase 2 · Identidad** (Branding → Diseño + Ilustración → Crítico). Branding de la propuesta B recibe las decisiones de A para diferenciarse a propósito.
 
 **Fase 3 · Iteración humana**. Cada propuesta se ajusta por separado: paneles de color, tipografía y logotipo en vivo, y un campo de prompt que pasa por el agente de branding con todo el contexto. Cada cambio guarda la versión anterior.
@@ -86,7 +94,7 @@ Seamos precisos: **el modelo no se reentrena**. Lo que mejora es el **contexto**
 Las señales que usa el Manager, de más a menos fuertes:
 
 1. **Ediciones manuales**: si cambiaste el acento de `#FF2E88` a `#E0306E`, eso es una corrección directa.
-2. **Ajustes por prompt**: lo que tuviste que pedir es lo que el sistema no entregó solo.
+2. **Ajustes por prompt y direcciones de big ideas**: lo que tuviste que pedir o redirigir es lo que el sistema no entregó solo.
 3. **Calificación y favorita**: qué dirección ganó y por qué (tus notas).
 4. **Puntaje del crítico**: contraste entre el juicio automático y el tuyo.
 
