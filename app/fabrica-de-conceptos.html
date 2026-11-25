@@ -597,14 +597,20 @@ function renderConn(flash) {
   };
   const [tone, html] = M[conn.state] || M.unknown;
   el.className = "notice" + (tone ? " " + tone : ""); el.hidden = conn.state === "granted" && !flash;
-  el.innerHTML = html + (conn.state === "prompt" || conn.state === "unknown" ? ` <div class="row" style="margin-top:8px"><button class="btn primary sm" id="connAsk">Dar permiso</button></div>` : "")
+  el.innerHTML = html + (conn.lastError && conn.state !== "granted" ? `<div style="margin-top:6px;font-family:var(--mono);font-size:11.5px">${esc(conn.lastError)}</div>` : "") + (conn.state === "prompt" || conn.state === "unknown" ? ` <div class="row" style="margin-top:8px"><button class="btn primary sm" id="connAsk">Dar permiso</button></div>` : "")
     + (conn.state === "denied" || conn.state === "unavailable" ? ` <div class="row" style="margin-top:8px">${conn.state === "denied" ? `<button class="btn sm" id="connManage">Abrir permisos</button>` : ""}<button class="btn sm" id="connCopy">Copiar enlace</button></div>` : "");
   $("#connAsk")?.addEventListener("click", async () => {
+    const btn = $("#connAsk"); btn.disabled = true; btn.textContent = "Esperando el aviso de Claude…";
+    const wait = setTimeout(() => { conn.lastError = "No apareció ningún aviso en 20 s. Busca el menú de Permisos de esta página (junto a su título) y activa Claude, o recarga e inténtalo otra vez."; renderConn(true); }, 20000);
     try {
-      if (S.perms) { const r = await S.perms.request(["sample"]); conn.state = r.sample || conn.state; }
-      if (conn.state !== "granted" && S.sample) { await S.sample("Responde solo: OK", { modelTier: "quick", cache: false }); conn.state = "granted"; }
-    } catch (e) { conn.state = e?.code === "not_granted" ? "denied" : conn.state; if (e?.code && e.code !== "not_granted") toast(errCopy(e)); }
-    renderConn(true);
+      // the documented path: the first real call asks the viewer for consent
+      await S.sample("Responde solo: OK", { modelTier: "quick", cache: false });
+      conn.state = "granted"; conn.lastError = "";
+    } catch (e) {
+      conn.state = e?.code === "not_granted" ? "denied" : "prompt";
+      conn.lastError = `Claude respondió: ${e?.code || "error"}${e?.message ? " — " + e.message : ""}`;
+    }
+    clearTimeout(wait); renderConn(true);
   });
   $("#connManage")?.addEventListener("click", () => S.perms?.manage().then(checkClaude).catch(() => toast("Abre el menú Permisos de esta página (arriba, junto al título) y activa Claude.")));
   $("#connCopy")?.addEventListener("click", () => navigator.clipboard.writeText(link).then(() => toast("Enlace copiado")).catch(() => toast(link)));
