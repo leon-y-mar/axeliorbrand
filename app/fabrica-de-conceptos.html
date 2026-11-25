@@ -460,6 +460,7 @@ function log(p, agent, msg) {
   p.log = p.log || []; const t = new Date();
   p.log.push({ t: t.toTimeString().slice(0, 8), a: agent, m: msg });
   if (p.log.length > 200) p.log.shift();
+  saveSoon(p);   // every step is persisted, so a failure can be read back later
   if (p.id === S.current) renderLog();
 }
 function setAgent(k, s, note) { S.agentState[k] = { s, note }; renderHarness(); }
@@ -498,6 +499,7 @@ ${schema}`;
     setAgent(key, "error", e.code || "error");
     if (e?.code === "not_granted") { conn.state = "denied"; renderConn(true); }
     log(p, a.name, "error: " + (e.code || "") + " " + (e.message || ""));
+    d(`${a.name} falló: ${e.code || ""} ${e.message || ""}`);
     throw e;
   }
 }
@@ -568,7 +570,11 @@ const compactProp = pr => { const x = clone(pr); delete x.history; delete x.edic
 const conn = { state: "checking" };
 let samplePromise = null;
 const diag = [];
-function d(msg) { diag.push(new Date().toTimeString().slice(0, 8) + "  " + msg); const el = $("#diagLog"); if (el) el.textContent = diag.join("\n"); }
+let diagT = null;
+function d(msg) {
+  diag.push(new Date().toTimeString().slice(0, 8) + "  " + msg); const el = $("#diagLog"); if (el) el.textContent = diag.join("\n");
+  clearTimeout(diagT); diagT = setTimeout(() => { if (store.db) store.db.doc(store.base() + "/diagnostico").set({ lineas: diag.slice(-120), actualizado: new Date().toISOString(), agente: navigator.userAgent }).catch(() => { }); }, 1500);
+}
 let TIERS = null;   // model tiers this view accepts; null = unknown → send none
 function tierOpt(t) { if (!TIERS) return {}; if (TIERS.includes(t)) return { modelTier: t }; if (TIERS.includes("default")) return { modelTier: "default" }; return {}; }
 function checkClaude() {
